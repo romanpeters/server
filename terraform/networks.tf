@@ -1,4 +1,3 @@
-# Network configuration
 resource "unifi_network" "default" {
     name                         = "Default"
     purpose                      = "corporate"
@@ -18,6 +17,27 @@ resource "unifi_network" "default" {
     multicast_dns                = true
     network_group                = "LAN"
     network_isolation_enabled    = false
+
+    lifecycle {
+      ignore_changes = [
+        dhcp_v6_dns,
+        dhcp_v6_dns_auto,
+        dhcp_v6_enabled,
+        dhcp_v6_lease,
+        dhcp_v6_start,
+        dhcp_v6_stop,
+        ipv6_interface_type,
+        ipv6_ra_enable,
+        ipv6_ra_preferred_lifetime,
+        ipv6_ra_valid_lifetime,
+        ipv6_pd_start,
+        ipv6_pd_stop,
+        ipv6_ra_priority,
+        wan_dhcp_v6_pd_size,
+        wan_prefixlen,
+        wan_dns
+        ]
+    }
 }
 
 resource "unifi_network" "servers" {
@@ -32,7 +52,7 @@ resource "unifi_network" "servers" {
         "10.10.20.1",
     ]
     dhcp_enabled               = true
-    dhcp_start                 = "10.10.20.6"
+    dhcp_start                 = "10.10.20.10"
     dhcp_stop                  = "10.10.20.254"
 
     igmp_snooping              = false
@@ -40,6 +60,27 @@ resource "unifi_network" "servers" {
     multicast_dns              = false
     network_group              = "LAN"
     network_isolation_enabled  = false
+
+    lifecycle {
+      ignore_changes = [
+        dhcp_v6_dns,
+        dhcp_v6_dns_auto,
+        dhcp_v6_enabled,
+        dhcp_v6_lease,
+        dhcp_v6_start,
+        dhcp_v6_stop,
+        ipv6_interface_type,
+        ipv6_ra_enable,
+        ipv6_ra_preferred_lifetime,
+        ipv6_ra_valid_lifetime,
+        ipv6_pd_start,
+        ipv6_pd_stop,
+        ipv6_ra_priority,
+        wan_dhcp_v6_pd_size,
+        wan_prefixlen,
+        wan_dns
+        ]
+    }
 }
 
 resource "unifi_network" "internet" {
@@ -50,7 +91,7 @@ resource "unifi_network" "internet" {
     vlan_id                    = 11
 
     dhcp_enabled               = true
-    dhcp_start                 = "10.10.11.6"
+    dhcp_start                 = "10.10.11.10"
     dhcp_stop                  = "10.10.11.254"
     
     domain_name                = "guest"
@@ -59,6 +100,27 @@ resource "unifi_network" "internet" {
     multicast_dns              = true
     network_group              = "LAN"
     network_isolation_enabled  = false
+
+    lifecycle {
+        ignore_changes = [
+        dhcp_v6_dns,
+        dhcp_v6_dns_auto,
+        dhcp_v6_enabled,
+        dhcp_v6_lease,
+        dhcp_v6_start,
+        dhcp_v6_stop,
+        ipv6_interface_type,
+        ipv6_ra_enable,
+        ipv6_ra_preferred_lifetime,
+        ipv6_ra_valid_lifetime,
+        ipv6_pd_start,
+        ipv6_pd_stop,
+        ipv6_ra_priority,
+        wan_dhcp_v6_pd_size,
+        wan_prefixlen,
+        wan_dns
+        ]
+    }
 }
 
 resource "unifi_network" "things" {
@@ -78,4 +140,25 @@ resource "unifi_network" "things" {
     multicast_dns              = true
     network_group              = "LAN"
     network_isolation_enabled  = false
+
+    lifecycle {
+      ignore_changes = [
+        dhcp_v6_dns,
+        dhcp_v6_dns_auto,
+        dhcp_v6_enabled,
+        dhcp_v6_lease,
+        dhcp_v6_start,
+        dhcp_v6_stop,
+        ipv6_interface_type,
+        ipv6_ra_enable,
+        ipv6_ra_preferred_lifetime,
+        ipv6_ra_valid_lifetime,
+        ipv6_pd_start,
+        ipv6_pd_stop,
+        ipv6_ra_priority,
+        wan_dhcp_v6_pd_size,
+        wan_prefixlen,
+        wan_dns
+        ]
+    }
 }
