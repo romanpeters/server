@@ -8,8 +8,8 @@ variable "unifi_username" {
   type        = string
 }
 
-variable "unifi_password" {
-  description = "The password for UniFi API"
+variable "unifi_api_key" {
+  description = "The API key for UniFi API"
   type        = string
   sensitive   = true
 }
@@ -19,12 +19,12 @@ variable "proxmox_url" {
   type        = string
 }
 
-variable "proxmox_api_token_id" {
+variable "proxmox_api_id" {
   description = "The API token ID for Proxmox authentication"
   type        = string
 }
 
-variable "proxmox_api_token_secret" {
+variable "proxmox_api_key" {
   description = "The API token secret for Proxmox authentication" 
   type        = string
   sensitive   = true
