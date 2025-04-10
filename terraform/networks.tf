@@ -8,9 +8,7 @@ resource "unifi_network" "default" {
     dhcp_enabled                 = true
     dhcp_start                   = "10.10.10.10"
     dhcp_stop                    = "10.10.10.250"
-    dhcp_dns                     = [
-        "10.10.10.200",
-    ]
+
     domain_name                  = "internal"
     igmp_snooping                = true
     internet_access_enabled      = true
@@ -20,22 +18,11 @@ resource "unifi_network" "default" {
 
     lifecycle {
       ignore_changes = [
-        dhcp_v6_dns,
-        dhcp_v6_dns_auto,
-        dhcp_v6_enabled,
-        dhcp_v6_lease,
         dhcp_v6_start,
         dhcp_v6_stop,
-        ipv6_interface_type,
-        ipv6_ra_enable,
-        ipv6_ra_preferred_lifetime,
-        ipv6_ra_valid_lifetime,
         ipv6_pd_start,
         ipv6_pd_stop,
         ipv6_ra_priority,
-        wan_dhcp_v6_pd_size,
-        wan_prefixlen,
-        wan_dns
         ]
     }
 }
@@ -63,22 +50,11 @@ resource "unifi_network" "servers" {
 
     lifecycle {
       ignore_changes = [
-        dhcp_v6_dns,
-        dhcp_v6_dns_auto,
-        dhcp_v6_enabled,
-        dhcp_v6_lease,
         dhcp_v6_start,
         dhcp_v6_stop,
-        ipv6_interface_type,
-        ipv6_ra_enable,
-        ipv6_ra_preferred_lifetime,
-        ipv6_ra_valid_lifetime,
         ipv6_pd_start,
         ipv6_pd_stop,
         ipv6_ra_priority,
-        wan_dhcp_v6_pd_size,
-        wan_prefixlen,
-        wan_dns
         ]
     }
 }
@@ -102,23 +78,12 @@ resource "unifi_network" "internet" {
     network_isolation_enabled  = false
 
     lifecycle {
-        ignore_changes = [
-        dhcp_v6_dns,
-        dhcp_v6_dns_auto,
-        dhcp_v6_enabled,
-        dhcp_v6_lease,
+      ignore_changes = [
         dhcp_v6_start,
         dhcp_v6_stop,
-        ipv6_interface_type,
-        ipv6_ra_enable,
-        ipv6_ra_preferred_lifetime,
-        ipv6_ra_valid_lifetime,
         ipv6_pd_start,
         ipv6_pd_stop,
         ipv6_ra_priority,
-        wan_dhcp_v6_pd_size,
-        wan_prefixlen,
-        wan_dns
         ]
     }
 }
@@ -143,22 +108,11 @@ resource "unifi_network" "things" {
 
     lifecycle {
       ignore_changes = [
-        dhcp_v6_dns,
-        dhcp_v6_dns_auto,
-        dhcp_v6_enabled,
-        dhcp_v6_lease,
         dhcp_v6_start,
         dhcp_v6_stop,
-        ipv6_interface_type,
-        ipv6_ra_enable,
-        ipv6_ra_preferred_lifetime,
-        ipv6_ra_valid_lifetime,
         ipv6_pd_start,
         ipv6_pd_stop,
         ipv6_ra_priority,
-        wan_dhcp_v6_pd_size,
-        wan_prefixlen,
-        wan_dns
         ]
     }
 }
