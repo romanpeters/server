@@ -1,6 +1,10 @@
 # Secrets
 .envrc
 
+# Inputs
+hosts.csv
+services.csv
+
 # Terraform
 *.tfstate
 *.backup
