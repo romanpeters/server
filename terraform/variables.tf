@@ -9,7 +9,7 @@ variable "unifi_username" {
 }
 
 variable "unifi_api_key" {
-  description = "The API key for UniFi API"
+  description = "The API key for UniFi authentication"
   type        = string
   sensitive   = true
 }
@@ -19,15 +19,21 @@ variable "proxmox_url" {
   type        = string
 }
 
-variable "proxmox_api_id" {
-  description = "The API token ID for Proxmox authentication"
-  type        = string
-}
-
 variable "proxmox_api_key" {
-  description = "The API token secret for Proxmox authentication" 
+  description = "The API key for Proxmox authentication" 
   type        = string
   sensitive   = true
+}
+
+variable "cloudflare_api_key" {
+  description = "The API key for Cloudflare authentication"
+  type        = string
+  sensitive   = true
+}
+
+variable "cloudflare_zone_id" {
+  description = "The ID for the Cloudflare Zone"
+  type        = string
 }
 
 variable "root_password" {
@@ -38,5 +44,15 @@ variable "root_password" {
 
 variable "ssh_key" {
   description = "SSH public key for the root user"
+  type        = string
+}
+
+variable "domain_name" {
+  description = "Public domain name"
+  type        = string
+}
+
+variable "dns_domain" {
+  description = "Local DNS domain name"
   type        = string
 }
