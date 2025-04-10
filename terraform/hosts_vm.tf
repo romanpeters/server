@@ -71,7 +71,7 @@ resource "proxmox_virtual_environment_vm" "server" {
         mtu          = 0
         queues       = 0
         rate_limit   = 0
-        vlan_id      = 20
+        vlan_id      = local.hosts_map["server"].vlan
     }
 
     vga {
@@ -153,7 +153,7 @@ resource "proxmox_virtual_environment_vm" "homeassistant" {
         mtu          = 0
         queues       = 0
         rate_limit   = 0
-        vlan_id      = 0
+        vlan_id      = local.hosts_map["homeassistant"].vlan
     }
 
   lifecycle {
@@ -230,7 +230,7 @@ resource "proxmox_virtual_environment_vm" "ansible" {
         mtu          = 0
         queues       = 0
         rate_limit   = 0
-        vlan_id      = 20
+        vlan_id      = local.hosts_map["ansible"].vlan
     }
 
   lifecycle {

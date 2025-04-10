@@ -33,7 +33,7 @@ resource "cloudflare_dns_record" "www" {
   zone_id = var.cloudflare_zone_id
   comment = "Managed by Terraform"
   content = var.domain_name
-  name = "www"
+  name = "www.${var.domain_name}"
   proxied = true
   ttl = 1
   type = "CNAME"
@@ -45,9 +45,13 @@ resource "cloudflare_dns_record" "dns_record" {
   zone_id = var.cloudflare_zone_id
   comment = "Managed by Terraform"
   content = chomp(data.http.public_ip.response_body)
-  name = each.value.name
+  name = "${each.value.name}.${var.domain_name}"
   proxied = true
   ttl = 1
   type = "A"
+
+lifecycle {
+  ignore_changes = [content]
+}
 }
 

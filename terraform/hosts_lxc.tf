@@ -50,7 +50,7 @@ resource "proxmox_virtual_environment_container" "production" {
         mtu         = 0
         name        = "eth0"
         rate_limit  = 0
-        vlan_id     = 20
+        vlan_id     = local.hosts_map["production"].vlan
     }
 
     operating_system {
@@ -110,11 +110,11 @@ resource "proxmox_virtual_environment_container" "adguard" {
         bridge      = "vmbr0"
         enabled     = true
         firewall    = false
-        mac_address = "bc:24:11:45:08:90"
+        mac_address = local.hosts_map["adguard"].mac
         mtu         = 0
         name        = "eth0"
         rate_limit  = 0
-        vlan_id     = 0
+        vlan_id     = local.hosts_map["adguard"].vlan
     }
 
     operating_system {
