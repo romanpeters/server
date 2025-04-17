@@ -50,27 +50,6 @@ __Note__: For detailed help, run:
 codex --help
 ```
 
-## Using Codex CLI
-
-To open an interactive Codex session in this repository:
-```bash
-codex
-```
-Once started, you can issue natural language prompts and Codex will:
-- Propose file changes via `apply_patch` calls
-- Inspect the workspace using `shell` calls (e.g., run tests, list files)
-- Manage Git state (e.g., `git status`, `git commit`)
-
-Examples of Codex function calls:
-```python
-# List all files recursively
-shell(["bash", "-lc", "ls -R ."])
-
-# Apply a patch to update a file
-apply_patch({"cmd": ["apply_patch", "*** Begin Patch\n*** Update File: path/to/file\n@@ ...\n+Hello\n*** End Patch"]})
-```
-
-To exit the session, send an ‘exit’ command or press `Ctrl-D`.
 
 ## Version Control
 
