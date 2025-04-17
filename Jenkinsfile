@@ -11,8 +11,8 @@ pipeline {
             steps {
                 script {
                     sh 'cd terraform'
-                    sh 'terraform init'
-                    sh 'terraform apply -auto-approve'
+                    sh 'terraform init -upgrade'
+                    sh 'terraform apply -auto-approve -var-file=vars.tfvars'
                 }
             }
         }

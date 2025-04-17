@@ -9,7 +9,7 @@ resource "unifi_dns_record" "dns_wildcard" {
 }
 
 resource "unifi_user" "devices" {
-  for_each = local.hosts_map
+  for_each = local.hosts_map 
 
   mac              = each.value.mac
   name             = each.value.friendly_name

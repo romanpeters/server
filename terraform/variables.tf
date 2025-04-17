@@ -56,3 +56,21 @@ variable "dns_domain" {
   description = "Local DNS domain name"
   type        = string
 }
+
+variable "wifi_lan_password" {
+  description = "Password for Wifi SSID LAN"
+  type        = string
+  sensitive   = true
+}
+
+variable "wifi_internet_password" {
+  description = "Password for Wifi SSID Internet"
+  type        = string
+  sensitive   = true
+}
+
+variable "wifi_things_password" {
+  description = "Password for Wifi SSID Things"
+  type        = string
+  sensitive   = true
+}

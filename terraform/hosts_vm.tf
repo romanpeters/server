@@ -148,12 +148,12 @@ resource "proxmox_virtual_environment_vm" "homeassistant" {
         disconnected = false
         enabled      = true
         firewall     = false
-        mac_address  = local.hosts_map["homeassistant"].mac
+        mac_address  = local.hosts_map["home-assistant"].mac
         model        = "virtio"
         mtu          = 0
         queues       = 0
         rate_limit   = 0
-        vlan_id      = local.hosts_map["homeassistant"].vlan
+        vlan_id      = local.hosts_map["home-assistant"].vlan
     }
 
   lifecycle {

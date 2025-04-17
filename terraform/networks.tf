@@ -23,6 +23,8 @@ resource "unifi_network" "default" {
         ipv6_pd_start,
         ipv6_pd_stop,
         ipv6_ra_priority,
+        ipv6_ra_enable,
+        ipv6_ra_valid_lifetime,
         ]
     }
 }
@@ -55,6 +57,8 @@ resource "unifi_network" "servers" {
         ipv6_pd_start,
         ipv6_pd_stop,
         ipv6_ra_priority,
+        ipv6_ra_enable,
+        ipv6_ra_valid_lifetime,
         ]
     }
 }
@@ -84,6 +88,8 @@ resource "unifi_network" "internet" {
         ipv6_pd_start,
         ipv6_pd_stop,
         ipv6_ra_priority,
+        ipv6_ra_enable,
+        ipv6_ra_valid_lifetime,
         ]
     }
 }
@@ -113,6 +119,59 @@ resource "unifi_network" "things" {
         ipv6_pd_start,
         ipv6_pd_stop,
         ipv6_ra_priority,
+        ipv6_ra_enable,
+        ipv6_ra_valid_lifetime,
         ]
     }
+}
+
+# resource "unifi_wlan" "lan" {
+#   name        = "LAN"
+#   passphrase  = var.wifi_lan_password
+#   security    = "wpapsk"
+#   wlan_band   = "both"
+# 
+#   network_id  = 1
+# }
+# 
+# resource "unifi_wlan" "internet" {
+#   name        = "Internet"
+#   passphrase  = var.wifi_internet_password
+#   security    = "wpapsk"
+#   wlan_band   = "2g"
+# 
+#   network_id  = 11
+# }
+# 
+# resource "unifi_wlan" "things" {
+#   name        = "Things"
+#   passphrase  = var.wifi_things_password
+#   security    = "wpapsk"
+#   wlan_band   = "2g"
+# 
+#   network_id  = 11
+# }
+
+data "cloudflare_ip_ranges" "cloudflare" {}
+
+resource "unifi_port_forward" "cloudflare_https" {
+  for_each = toset(data.cloudflare_ip_ranges.cloudflare.ipv4_cidrs)
+
+  name                  = "CF HTTPS ${each.key}"
+  dst_port              = 443
+  fwd_ip                = "10.10.20.10"
+  fwd_port              = 443
+  protocol              = "tcp"
+  port_forward_interface = "wan"
+  src_ip                = each.key
+}
+
+resource "unifi_port_forward" "plex" {
+  name       = "Plex"
+  dst_port   = 32400
+  fwd_ip     = "10.10.20.21"
+  fwd_port   = 32400
+  protocol   = "tcp_udp"
+  port_forward_interface = "wan"
+  src_ip     = "any"
 }
