@@ -3,20 +3,16 @@
 This repository contains Terraform configurations, Ansible playbooks, and Molecule tests for managing infrastructure (NixOS hosts and an NGINX webserver reverse proxy).
 
 ## Prerequisites
+These instructions assume your controller/workstation runs macOS or a Linux distribution (e.g., Ubuntu or RHEL). NixOS is only required on target hosts, not on your local machine.
 
 - Git
-- Python 3.8+ and pip
+- Python 3.8+ and pip (or pip3)
 - Docker Engine (for Molecule testing)
-- (Optional) Nix & nix-shell (for environment isolation)
+- (Optional) Nix & nix-shell (for local development isolation)
 
 ## Setup Development Environment
 
-1. Clone the repository:
-   ```bash
-   git clone <repo-url>
-   cd <repo-dir>
-   ```
-2. Install Python dependencies:
+1. Install Python dependencies:
    ```bash
    pip install --user -r requirements.txt
    ```
