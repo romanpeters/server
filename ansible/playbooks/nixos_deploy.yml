@@ -1,0 +1,43 @@
+---
+- name: Deploy NixOS configurations
+  hosts: nixos
+  gather_facts: false
+  vars:
+    # Directory containing NixOS configurations for each host
+    nix_configs_dir: "{{ playbook_dir }}/../../nix"
+  tasks:
+    - name: Check for NixOS configuration file
+      delegate_to: localhost
+      stat:
+        path: "{{ nix_configs_dir }}/{{ inventory_hostname }}.nix"
+      register: nix_conf
+
+    - name: Skip host without NixOS config
+      meta: end_host
+      when: not nix_conf.stat.exists
+
+    - name: Build NixOS configuration for host on control node
+      delegate_to: localhost
+      args:
+        chdir: "{{ nix_configs_dir }}"
+      command: >-
+        nix-build {{ inventory_hostname }}.nix -o result-{{ inventory_hostname }}
+      register: nix_build
+
+    - name: Copy Nix closure to remote host
+      delegate_to: localhost
+      args:
+        chdir: "{{ nix_configs_dir }}"
+      command: >-
+        nix-copy-closure --to {{ inventory_hostname }} result-{{ inventory_hostname }}
+
+    - name: Activate NixOS configuration on remote host
+      become: true
+      command: >-
+        nixos-rebuild switch --no-build
+
+    - name: Clean up local build result
+      delegate_to: localhost
+      file:
+        path: "{{ nix_configs_dir }}/result-{{ inventory_hostname }}"
+        state: absent

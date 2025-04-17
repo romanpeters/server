@@ -1,0 +1,21 @@
+---
+# Molecule test configuration for the webserver role
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: instance
+    image: ubuntu:20.04
+    privileged: true
+    pre_build_image: false
+provisioner:
+  name: ansible
+  playbooks:
+    converge: playbook.yml
+verifier:
+  name: ansible
+  playbooks:
+    verify: verify.yml
+  lint:
+    name: ansible-lint

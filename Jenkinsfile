@@ -17,21 +17,23 @@ pipeline {
             }
         }
 
-        // stage('NixOS Build') {
-        //     steps {
-        //         script {
-        //             sh 'nix-build'
-        //         }
-        //     }
-        // }   
+        stage('Configure NixOS Hosts') {
+            steps {
+                script {
+                    // Deploy NixOS configurations to all hosts marked as nixos
+                    sh 'ansible-playbook -i ansible/inventory/hosts_csv.py ansible/playbooks/nixos_deploy.yml'
+                }
+            }
+        }
 
-        // stage('Ansible Configure') {
-        //     steps {
-        //         script {
-        //             sh 'ansible-playbook -i inventory.ini configure_infrastructure.yml'
-        //         }
-        //     }
-        // }
+        stage('Configure Webserver') {
+            steps {
+                script {
+                    // Configure Nginx reverse proxy on the webserver host
+                    sh 'ansible-playbook -i ansible/inventory/hosts_csv.py ansible/playbooks/webserver.yml'
+                }
+            }
+        }
     }
 
 }
