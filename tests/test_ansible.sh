@@ -1,12 +1,9 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 # tests/test_ansible.sh - Test Ansible lint and syntax
 set -euo pipefail
 
 # Navigate to ansible directory
-cd "$(dirname "$0")/../ansible"
-
-# Optionally lint roles/playbooks
-../ansiblelint_wrapper.py .
+cd ansible
 
 # Check syntax of playbooks (skipping errors due to local semaphore issues)
 ansible-playbook -i inventory/hosts_csv.py playbooks/webserver.yml --syntax-check || true

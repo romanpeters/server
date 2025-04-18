@@ -16,19 +16,19 @@ repos:
     hooks:
       - id: ansible-lint
         name: ansible-lint
-        entry: python3 ansiblelint_wrapper.py
+        entry: python3 tests/ansiblelint_wrapper.py
         language: script
         files: \\.(yml|yaml)$
         pass_filenames: true
       - id: terraform-tests
         name: Run Terraform tests
-        entry: bash tests/test_terraform.sh
+        entry: /bin/bash tests/test_terraform.sh
         language: script
         pass_filenames: false
         always_run: true
       - id: ansible-tests
         name: Run Ansible tests
-        entry: bash tests/test_ansible.sh
+        entry: /bin/bash tests/test_ansible.sh
         language: script
         pass_filenames: false
         always_run: true
