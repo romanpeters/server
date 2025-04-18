@@ -1,0 +1,6 @@
+---
+# Role metadata for webserver role
+galaxy_info:
+  author: ''
+  description: 'Webserver role for Nginx reverse proxy'
+  license: MIT

@@ -3,13 +3,14 @@ data "http" "public_ip" {
 }
 
 resource "unifi_dns_record" "dns_wildcard" {
-    name   = "*.${var.domain_name}"
-    type   = "A"
-    record = local.hosts_map["webserver"].ip
+  name   = "*.${var.domain_name}"
+  type   = "A"
+  record = local.hosts_map["webserver"].ip
 }
 
 resource "unifi_user" "devices" {
-  for_each = local.hosts_map 
+  # Exclude the controller itself (unifi) from DNS settings
+  for_each = { for k, v in local.hosts_map : k => v if k != "unifi" }
 
   mac              = each.value.mac
   name             = each.value.friendly_name
@@ -23,20 +24,20 @@ resource "cloudflare_dns_record" "domain_name" {
   zone_id = var.cloudflare_zone_id
   comment = "Managed by Terraform"
   content = chomp(data.http.public_ip.response_body)
-  name = var.domain_name
+  name    = var.domain_name
   proxied = true
-  ttl = 1
-  type = "A"
+  ttl     = 1
+  type    = "A"
 }
 
 resource "cloudflare_dns_record" "www" {
   zone_id = var.cloudflare_zone_id
   comment = "Managed by Terraform"
   content = var.domain_name
-  name = "www.${var.domain_name}"
+  name    = "www.${var.domain_name}"
   proxied = true
-  ttl = 1
-  type = "CNAME"
+  ttl     = 1
+  type    = "CNAME"
 }
 
 resource "cloudflare_dns_record" "dns_record" {
@@ -45,13 +46,12 @@ resource "cloudflare_dns_record" "dns_record" {
   zone_id = var.cloudflare_zone_id
   comment = "Managed by Terraform"
   content = chomp(data.http.public_ip.response_body)
-  name = "${each.value.name}.${var.domain_name}"
+  name    = "${each.value.name}.${var.domain_name}"
   proxied = true
-  ttl = 1
-  type = "A"
+  ttl     = 1
+  type    = "A"
 
-lifecycle {
-  ignore_changes = [content]
+  lifecycle {
+    ignore_changes = [content]
+  }
 }
-}
-

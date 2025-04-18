@@ -1,9 +1,8 @@
 # Project Development Guide
 
-This repository contains Terraform configurations, Ansible playbooks, and Molecule tests for managing infrastructure (NixOS hosts and an NGINX webserver reverse proxy).
+This repository contains Terraform configurations, Ansible playbooks, and Molecule tests for managing infrastructure.
 
 ## Prerequisites
-These instructions assume your controller/workstation runs macOS or a Linux distribution (e.g., Ubuntu or RHEL). NixOS is only required on target hosts, not on your local machine.
 
 - Git
 - Python 3.8+ and pip (or pip3)
@@ -73,4 +72,3 @@ terraform apply -auto-approve -var-file=vars.tfvars
 The `Jenkinsfile` defines stages to run Terraform, deploy NixOS hosts, and configure the webserver.
 
 ---
-*Happy automation!* 🚀
