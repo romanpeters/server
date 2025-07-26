@@ -9,8 +9,7 @@ pipeline {
 
         stage('Terraform Apply') {
             steps {
-                script {
-                    sh 'cd terraform'
+                dir('terraform') {
                     sh 'terraform init -upgrade'
                     sh 'terraform apply -auto-approve -var-file=vars.tfvars'
                 }
@@ -19,18 +18,18 @@ pipeline {
 
         stage('Configure NixOS Hosts') {
             steps {
-                script {
+                dir('ansible') {
                     // Deploy NixOS configurations to all hosts marked as nixos
-                    sh 'ansible-playbook -i ansible/inventory/hosts_csv.py ansible/playbooks/nixos_deploy.yml'
+                    sh 'ansible-playbook -i inventory/hosts_csv.py playbooks/nixos_deploy.yml'
                 }
             }
         }
 
         stage('Configure Webserver') {
             steps {
-                script {
+                dir('ansible') {
                     // Configure Nginx reverse proxy on the webserver host
-                    sh 'ansible-playbook -i ansible/inventory/hosts_csv.py ansible/playbooks/webserver.yml'
+                    sh 'ansible-playbook -i inventory/hosts_csv.py playbooks/webserver.yml'
                 }
             }
         }

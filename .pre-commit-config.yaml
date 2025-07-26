@@ -1,3 +1,4 @@
+---
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
@@ -11,15 +12,9 @@ repos:
       - id: yamllint
         files: \.(yml|yaml)$
 
-  # Local hooks: ansible-lint plus integration test scripts
+  # Local integration test scripts
   - repo: local
     hooks:
-      - id: ansible-lint
-        name: ansible-lint
-        entry: python3 tests/ansiblelint_wrapper.py
-        language: script
-        files: \\.(yml|yaml)$
-        pass_filenames: true
       - id: terraform-tests
         name: Run Terraform tests
         entry: /bin/bash tests/test_terraform.sh

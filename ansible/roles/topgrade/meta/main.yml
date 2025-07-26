@@ -1,0 +1,5 @@
+---
+galaxy_info:
+  author: ""
+  description: "Role to install and configure topgrade"
+  license: MIT

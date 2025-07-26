@@ -1,0 +1,4 @@
+---
+# Default variables for NixOS deploy role
+# Directory containing per-host NixOS configurations
+nix_configs_dir: "{{ playbook_dir }}/../../nix"

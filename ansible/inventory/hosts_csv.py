@@ -8,6 +8,7 @@ import csv
 import json
 import os
 import sys
+import getpass
 
 
 def load_hosts(csv_path):
@@ -43,8 +44,8 @@ def main():
         # Only include known Linux OS families
         if os_val not in ("ubuntu", "rhel", "nixos"):
             continue
-        # Ansible will always connect as root
-        user = "root"
+        # Connect as the current user (root login is disabled)
+        user = getpass.getuser()
 
         inventory[os_val]["hosts"].append(name)
         inventory["_meta"]["hostvars"][name] = {

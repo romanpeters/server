@@ -1,0 +1,6 @@
+---
+- name: Install and configure topgrade
+  hosts: all
+  become: true
+  roles:
+    - topgrade

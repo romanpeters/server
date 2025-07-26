@@ -8,16 +8,24 @@ resource "unifi_dns_record" "dns_wildcard" {
   record = local.hosts_map["webserver"].ip
 }
 
+resource "unifi_dns_record" "devices" {
+  for_each = { for k, v in local.hosts_map : k => v }
+
+  name   = each.value.name
+  type   = "A"
+  record = each.value.ip
+}
+
 resource "unifi_user" "devices" {
   # Exclude the controller itself (unifi) from DNS settings
   for_each = { for k, v in local.hosts_map : k => v if k != "unifi" }
 
-  mac              = each.value.mac
-  name             = each.value.friendly_name
-  note             = "Managed by Terraform"
-  fixed_ip         = each.value.ip
-  allow_existing   = true
-  local_dns_record = "${each.key}.${var.dns_domain}"
+  mac            = each.value.mac
+  name           = each.value.friendly_name
+  note           = "Managed by Terraform"
+  fixed_ip       = each.value.ip
+  allow_existing = true
+  #local_dns_record = "${each.key}.${var.dns_domain}"
 }
 
 resource "cloudflare_dns_record" "domain_name" {

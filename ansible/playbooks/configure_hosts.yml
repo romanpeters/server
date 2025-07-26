@@ -1,0 +1,9 @@
+---
+- name: Configure hosts based on roles in host_vars
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Apply roles defined for this host
+      ansible.builtin.include_role:
+        name: "{{ item }}"
+      loop: "{{ roles_to_run | default([]) }}"

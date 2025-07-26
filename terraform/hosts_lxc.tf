@@ -90,7 +90,7 @@ resource "proxmox_virtual_environment_container" "adguard" {
 
     dns {
       servers = [
-        "10.10.10.254",
+        "10.10.10.1",
       ]
     }
 

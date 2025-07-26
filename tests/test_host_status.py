@@ -1,0 +1,47 @@
+# ./tests/test_host_status.py
+
+import csv
+
+import sys
+from pathlib import Path
+import subprocess
+
+GREEN = "\033[92m"
+RED = "\033[91m"
+RESET = "\033[0m"
+
+
+def is_reachable(ip: str) -> bool:
+    try:
+        subprocess.check_call(
+            ["ping", "-c", "1", ip],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        return True
+    except subprocess.CalledProcessError:
+        return False
+
+
+def main() -> int:
+    csv_path = Path(__file__).parent.parent / "hosts.csv"
+    failed = False
+    with open(csv_path, newline="") as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            name = row["name"]
+            ip = row["ip"]
+            status = (
+                GREEN + "REACHABLE" + RESET
+                if is_reachable(ip)
+                else RED + "UNREACHABLE" + RESET
+            )
+            status_output = f"{name:15} {ip:15} {status}"
+            print(status_output)
+            if "UNREACHABLE" in status_output:
+                failed = True
+    return 1 if failed else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
