@@ -1,0 +1,84 @@
+---
+# Tasks to install and configure Lima with bridged networking
+- name: Set Lima Homebrew and lima paths
+  ansible.builtin.set_fact:
+    brew_prefix: "{{ lookup('pipe', 'brew --prefix') }}"
+    brew_repo: "{{ lookup('pipe', 'brew --repository') }}"
+    lima_prefix: "{{ lookup('pipe', 'brew --prefix lima') }}"
+
+- name: Ensure Homebrew tap for lima-vm
+  ansible.builtin.shell: brew tap lima-vm/lima
+  args:
+    creates: "{{ brew_repo }}/Library/Taps/lima-vm/homebrew-lima"
+
+- name: Install lima via Homebrew
+  ansible.builtin.shell: brew install lima
+  args:
+    creates: "{{ brew_prefix }}/bin/limactl"
+
+- name: Install socket_vmnet via Homebrew
+  ansible.builtin.shell: brew install socket_vmnet
+  args:
+    creates: "{{ brew_prefix }}/bin/socket_vmnet"
+
+- name: Set Lima config and socket paths
+  ansible.builtin.set_fact:
+    lima_config_dir: "{{ ansible_env.HOME }}/.lima/_config"
+    lima_config_file: "{{ lima_config_dir }}/default.yaml"
+    socket_src: "{{ lima_prefix }}/libexec/lima/socket_vmnet"
+    socket_dest: "{{ brew_prefix }}/bin/socket_vmnet"
+
+- name: Check if socket_vmnet exists at source
+  ansible.builtin.stat:
+    path: "{{ socket_src }}"
+  register: socket_src_stat
+
+- name: Check if socket_vmnet already at destination
+  ansible.builtin.stat:
+    path: "{{ socket_dest }}"
+  register: socket_dest_stat
+
+- name: Move socket_vmnet to bin directory
+  ansible.builtin.command: mv "{{ socket_src }}" "{{ socket_dest }}"
+  become: true
+  when:
+    - socket_src_stat.stat.exists
+    - not socket_dest_stat.stat.exists
+
+- name: Set permissions on socket_vmnet
+  ansible.builtin.file:
+    path: "{{ socket_dest }}"
+    owner: root
+    group: wheel
+    mode: "4755"
+  become: true
+  when: socket_src_stat.stat.exists
+
+- name: Ensure Lima config directory exists
+  ansible.builtin.file:
+    path: "{{ lima_config_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Configure Lima default VM for bridged networking
+  ansible.builtin.copy:
+    dest: "{{ lima_config_file }}"
+    content: |
+      networks:
+        - lima.vde_switch:
+            interface: "{{ lima_bridge_interface }}"
+            socket: "{{ socket_dest }}"
+    backup: true
+
+- name: Restart default Lima VM
+  ansible.builtin.shell: |
+    limactl stop default || true
+    limactl start default
+  args:
+    executable: /bin/bash
+  when: socket_src_stat.stat.exists
+
+- name: Enable default Lima VM to autostart at boot
+  ansible.builtin.shell: limactl autostart default
+  args:
+    warn: false

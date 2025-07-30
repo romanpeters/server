@@ -1,11 +1,12 @@
 terraform {
+  required_version = ">= 1.0"
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
       version = "0.75.0"
     }
     unifi = {
-      source = "filipowm/unifi"
+      source  = "filipowm/unifi"
       version = "1.0.0"
     }
     cloudflare = {
@@ -20,9 +21,9 @@ terraform {
 }
 
 provider "proxmox" {
-  endpoint      = var.proxmox_url
-  api_token     = var.proxmox_api_key
-  insecure      = true
+  endpoint  = var.proxmox_url
+  api_token = var.proxmox_api_key
+  insecure  = true
 }
 
 provider "unifi" {

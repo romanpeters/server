@@ -1,0 +1,4 @@
+---
+# Roles to apply on 'adguard'
+roles_to_run:
+  - nixos_deploy
