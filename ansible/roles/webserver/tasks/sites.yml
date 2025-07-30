@@ -1,0 +1,23 @@
+---
+- name: Read sites from CSV
+  community.general.read_csv:
+    path: "{{ (playbook_dir + '/../../services.csv') | realpath }}"
+  register: sites_csv
+  delegate_to: localhost
+  run_once: true
+  become: false
+
+- name: Create site configurations
+  ansible.builtin.template:
+    src: site.j2
+    dest: "/etc/nginx/sites-available/{{ item.name }}.{{ domain_name }}"
+  loop: "{{ sites_csv.list }}"
+  notify: Restart nginx
+
+- name: Enable sites
+  ansible.builtin.file:
+    src: "/etc/nginx/sites-available/{{ item.name }}.{{ domain_name }}"
+    dest: "/etc/nginx/sites-enabled/{{ item.name }}.{{ domain_name }}"
+    state: link
+  loop: "{{ sites_csv.list }}"
+  notify: Restart nginx

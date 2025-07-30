@@ -1,0 +1,4 @@
+---
+- name: Restart nginx
+  ansible.builtin.shell:
+    cmd: nginx -t && systemctl restart nginx

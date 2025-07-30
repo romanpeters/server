@@ -1,2 +1,2 @@
-name,public,host,port,ssl
-subdomain,true,server,80,false
+name,alias,public,host,port,ssl
+subdomain,sub,true,server,80,false
