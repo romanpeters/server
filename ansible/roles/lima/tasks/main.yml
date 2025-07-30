@@ -50,7 +50,7 @@
     path: "{{ socket_dest }}"
     owner: root
     group: wheel
-    mode: '4755'
+    mode: "4755"
   become: true
   when: socket_src_stat.stat.exists
 
@@ -58,7 +58,7 @@
   ansible.builtin.file:
     path: "{{ lima_config_dir }}"
     state: directory
-    mode: '0755'
+    mode: "0755"
 
 - name: Configure Lima default VM for bridged networking
   ansible.builtin.copy:

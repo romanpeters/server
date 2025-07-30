@@ -53,11 +53,11 @@ resource "cloudflare_dns_record" "dns_record" {
 
   zone_id = var.cloudflare_zone_id
   comment = "Managed by Terraform"
-  content = chomp(data.http.public_ip.response_body)
+  content = var.domain_name
   name    = "${each.value.name}.${var.domain_name}"
   proxied = true
   ttl     = 1
-  type    = "A"
+  type    = "CNAME"
 
   lifecycle {
     ignore_changes = [content]

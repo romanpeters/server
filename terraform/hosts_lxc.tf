@@ -25,7 +25,6 @@ resource "proxmox_virtual_environment_container" "production" {
 
     dns {
       servers = [
-        "10.10.20.10",
         "10.10.20.1",
       ]
     }

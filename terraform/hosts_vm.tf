@@ -42,7 +42,7 @@ resource "proxmox_virtual_environment_vm" "server" {
     iothread          = false
     path_in_datastore = "vm-200-disk-0"
     replicate         = false
-    size              = 160
+    size              = 200
     ssd               = false
   }
 

@@ -3,6 +3,7 @@ venv/
 
 # Ansible runtime cache
 .ansible/
+
 # Secrets
 .envrc
 
