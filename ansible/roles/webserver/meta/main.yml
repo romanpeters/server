@@ -1,0 +1,9 @@
+galaxy_info:
+  author: Roman Peters
+  description: Installs and configures NGINX
+  license: license (GPLv2, MIT, etc)
+  min_ansible_version: 2.9
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all

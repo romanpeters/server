@@ -1,0 +1,31 @@
+---
+- name: Assert that the Cloudflare DNS API key is set
+  ansible.builtin.assert:
+    that:
+      - "lookup('env', 'CLOUDFLARE_DNS_API_KEY') != ''"
+    fail_msg: "The environment variable CLOUDFLARE_DNS_API_KEY is not set."
+
+- name: Install Certbot and Cloudflare DNS plugin
+  ansible.builtin.apt:
+    name:
+      - certbot
+      - python3-certbot-dns-cloudflare
+    state: present
+    update_cache: true
+
+- name: Create Cloudflare credentials file
+  ansible.builtin.template:
+    src: cloudflare.ini.j2
+    dest: /etc/nginx/cloudflare.ini
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Set up Certbot renewal cron job
+  ansible.builtin.cron:
+    name: "Certbot automatic renewal"
+    minute: "0"
+    hour: "0"
+    job: "certbot renew --quiet --dns-cloudflare --dns-cloudflare-credentials /etc/nginx/cloudflare.ini --post-hook 'systemctl reload nginx'"
+    user: root
+    state: present

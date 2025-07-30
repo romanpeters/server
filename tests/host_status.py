@@ -1,5 +1,8 @@
-# ./tests/test_host_status.py
-
+#!/usr/bin/env -S uv run --script
+# /// script
+# dependencies = [
+# ]
+# ///
 import csv
 
 import sys
