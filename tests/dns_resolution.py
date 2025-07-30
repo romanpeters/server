@@ -19,7 +19,7 @@ def is_tailscale_ip(ip: str) -> bool:
 
 
 def main() -> int:
-    csv_path = Path(__file__).parent.parent / "hosts.csv"
+    csv_path = Path(__file__).parent.parent / "data/hosts.csv"
     has_red = False
     with open(csv_path, newline="") as csvfile:
         reader = csv.DictReader(csvfile)

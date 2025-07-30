@@ -4,7 +4,7 @@
   gather_facts: false
   vars:
     # Directory containing NixOS configurations for each host
-    nix_configs_dir: "{{ playbook_dir }}/../../nix"
+    nix_configs_dir: "{{ playbook_dir }}/../../nixos"
   tasks:
     - name: Check for NixOS configuration file
       delegate_to: localhost

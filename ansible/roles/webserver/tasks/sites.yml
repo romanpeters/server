@@ -1,7 +1,7 @@
 ---
 - name: Read sites from CSV
   community.general.read_csv:
-    path: "{{ (playbook_dir + '/../../services.csv') | realpath }}"
+    path: "{{ (playbook_dir + '/../../data/services.csv') | realpath }}"
   register: sites_csv
   delegate_to: localhost
   run_once: true
