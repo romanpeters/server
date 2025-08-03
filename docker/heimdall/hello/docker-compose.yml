@@ -8,10 +8,10 @@ services:
     volumes:
       - ./heimdall:/config
     ports:
-      - {{ services.hello.port }}:80
+      - ${HELLO_PORT}:80
     restart: always
     labels:
       - homepage.group=Public
-      - homepage.name={{ domain_name }}
+      - homepage.name=${DOMAIN_NAME}
       - homepage.icon=heimdall.png
-      - homepage.href=https://hello.{{ domain_name }}/
+      - homepage.href=https://hello.${DOMAIN_NAME}/

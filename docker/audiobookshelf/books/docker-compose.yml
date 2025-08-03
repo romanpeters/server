@@ -7,7 +7,7 @@ services:
       - AUDIOBOOKSHELF_UID=1080
       - AUDIOBOOKSHELF_GID=1080
     ports:
-      - {{ services.books.port }}:80
+      - ${BOOKS_PORT}:80
     volumes:
       - ./config:/config
       - ./data:/metadata

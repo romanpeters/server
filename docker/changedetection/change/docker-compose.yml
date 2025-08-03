@@ -4,12 +4,12 @@ services:
     image: dgtlmoon/changedetection.io:0.45.12
     container_name: changedetection
     environment:
-      - BASE_URL=https://change.{{ domain_name }}
+      - BASE_URL=https://change.${DOMAIN_NAME}
       - PLAYWRIGHT_DRIVER_URL=ws://playwright-chrome:3000/?stealth=1&--disable-web-security=true
     volumes:
       - ./data:/datastore
     ports:
-      - {{ services.change.port }}:5000
+      - ${CHANGE_PORT}:5000
     depends_on:
       playwright-chrome:
         condition: service_started
@@ -35,4 +35,4 @@ services:
       - homepage.group=Applications
       - homepage.name=changedetection.io
       - homepage.icon=changedetection-io.png
-      - homepage.href=https://change.{{ domain_name }}/
+      - homepage.href=https://change.${DOMAIN_NAME}/

@@ -4,7 +4,7 @@ services:
     image: sctx/overseerr:1.33.2
     container_name: overseerr
     ports:
-      - {{ services.request.port }}:5055
+      - ${REQUEST_PORT}:5055
     volumes:
       - ./config/:/app/config
     environment:
@@ -15,4 +15,4 @@ services:
       - homepage.group=RomanTV
       - homepage.name=Overseerr
       - homepage.icon=overseerr.png
-      - homepage.href=https://request.{{ domain_name }}/
+      - homepage.href=https://request.${DOMAIN_NAME}/

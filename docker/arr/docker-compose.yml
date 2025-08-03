@@ -12,7 +12,7 @@ services:
       - PGID=1080
       - TZ=Europe/Amsterdam
     ports:
-      - {{ services.sonarr.port }}:8989
+      - ${SONARR_PORT}:8989
     restart: always
 
   radarr:
@@ -27,7 +27,7 @@ services:
       - PGID=1080
       - TZ=Europe/Amsterdam
     ports:
-      - {{ services.port.radarr }}:7878
+      - ${RADARR_PORT}:7878
     restart: always
 
   bazarr:
@@ -41,7 +41,7 @@ services:
       - PGID=1080
       - TZ=Europe/Amsterdam
     ports:
-      - {{ services.bazarr.port }}:6767
+      - ${BAZARR_PORT}:6767
     restart: always
 
   readarr:
@@ -56,7 +56,7 @@ services:
       - PGID=1080
       - TZ=Europe/Amsterdam
     ports:
-      - {{ services.readarr.port }}:8787
+      - ${READARR_PORT}:8787
     restart: always
 
   readarr-audio:
@@ -71,5 +71,5 @@ services:
       - PGID=1080
       - TZ=Europe/Amsterdam
     ports:
-      - {{ services.readarr-audio.port }}:8787
+      - ${READARR-AUDIO_PORT}:8787
     restart: always

@@ -13,5 +13,5 @@ services:
       - ./config:/config
       - /mount/media/books/ebooks:/books
     ports:
-      - {{ services.ebooks.port }}:8083
+      - ${EBOOKS_PORT}:8083
     restart: unless-stopped

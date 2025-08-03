@@ -6,5 +6,5 @@ services:
     volumes:
       - ./data:/app/data
     ports:
-      - {{ services.uptime.port }}:3001
+      - ${UPTIME_PORT}:3001
     restart: always

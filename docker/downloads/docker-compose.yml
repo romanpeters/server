@@ -13,12 +13,12 @@ services:
       TZ: Europe/Amsterdam
       VPN_SERVICE_PROVIDER: nordvpn
       VPN_TYPE: openvpn # or wireguard
-      OPENVPN_USER: {{ lookup('env', 'OPENVPN_USER') }}
-      OPENVPN_PASSWORD: {{ lookup('env', 'OPENVPN_PASSWORD') }}
+      OPENVPN_USER: ${OPENVPN_USER}
+      OPENVPN_PASSWORD: ${OPENVPN_PASSWORD}
       SERVER_COUNTRIES: Romania
     ports:
-      - {{ services.transmission.port }}:9091  # transmission
-      - {{ services.prowlarr.port }}:9696  # prowlarr
+      - ${TRANSMISSION_PORT}:9091 # transmission
+      - ${PROWLARR_PORT}:9696 # prowlarr
     restart: always
 
   transmission:

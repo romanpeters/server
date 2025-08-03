@@ -4,7 +4,7 @@ services:
     image: adguard/adguardhome:v0.107.43
     container_name: adguard
     ports:
-      - {{ services.adguard.port }}:80/tcp
+      - ${ADGUARD_PORT}:80/tcp
       - 53:53/udp
       - 53:53/tcp
       - 784:784/udp

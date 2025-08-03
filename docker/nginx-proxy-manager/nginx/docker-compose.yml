@@ -4,7 +4,7 @@ services:
     image: jc21/nginx-proxy-manager:2.11.1
     container_name: nginx_proxy_manager
     ports:
-      - {{ services.nginx.port }}:81
+      - ${NGINX_PORT}:81
       - 80:80
       - 443:443
     volumes:

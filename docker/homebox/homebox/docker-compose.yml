@@ -10,10 +10,10 @@ services:
     volumes:
       - ./data/:/data/
     ports:
-      - {{ services.homebox.port }}:7745
+      - ${HOMEBOX_PORT}:7745
     restart: always
     labels:
       - homepage.group=Applications
       - homepage.name=Homebox
       - homepage.icon=homebox.png
-      - homepage.href=https://homebox.{{ domain_name }}/
+      - homepage.href=https://homebox.${DOMAIN_NAME}/

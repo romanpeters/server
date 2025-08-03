@@ -8,10 +8,10 @@ services:
     volumes:
       - ./heimdall:/config
     ports:
-      - {{ services.rtv.port }}:80
+      - ${RTV_PORT}:80
     restart: always
     labels:
       - homepage.group=RomanTV
       - homepage.name=Landing Page
       - homepage.icon=heimdall.png
-      - homepage.href=https://rtv.{{ domain_name }}/
+      - homepage.href=https://rtv.${DOMAIN_NAME}/

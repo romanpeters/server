@@ -13,11 +13,11 @@ services:
     volumes:
       - ./data:/data
     ports:
-      - {{ port }}:80
+      - ${PORT}:80
       - 3012:3012 # websocket
     restart: unless-stopped
     labels:
       - homepage.group=Applications
       - homepage.name=Vaultwarden
       - homepage.icon=vaultwarden.png
-      - homepage.href=https://vaultwarden.{{ domain_name }}/
+      - homepage.href=https://vaultwarden.${DOMAIN_NAME}/
