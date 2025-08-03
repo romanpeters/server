@@ -1,0 +1,7 @@
+export TF_VAR_root_password="..."
+export TF_VAR_proxmox_api_key="terraform@pve!terraform=..."
+export TF_VAR_unifi_api_key="..."
+export TF_VAR_cloudflare_api_key="..."
+export TF_VAR_cloudflare_zone_id="..."
+
+export CLOUDFLARE_DNS_API_KEY="..."
