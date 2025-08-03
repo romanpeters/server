@@ -9,7 +9,7 @@
       "automerge": true
     }
   ],
-  "baseBranches": ["dev"],
+  "baseBranches": ["development"],
   "schedule": [
     "before 17:00 on Thursday"
   ],
