@@ -1,0 +1,17 @@
+---
+services:
+  heimdall:
+    container_name: heimdall_rtv
+    image: linuxserver/heimdall:2.5.8
+    environment:
+      - APP_NAME=RomanTV
+    volumes:
+      - ./heimdall:/config
+    ports:
+      - {{ services.rtv.port }}:80
+    restart: always
+    labels:
+      - homepage.group=RomanTV
+      - homepage.name=Landing Page
+      - homepage.icon=heimdall.png
+      - homepage.href=https://rtv.{{ domain_name }}/

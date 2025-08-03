@@ -1,0 +1,18 @@
+---
+services:
+  overseerr:
+    image: sctx/overseerr:1.33.2
+    container_name: overseerr
+    ports:
+      - {{ services.request.port }}:5055
+    volumes:
+      - ./config/:/app/config
+    environment:
+      - LOG_LEVEL=info
+      - TZ=Europe/Amsterdam
+    restart: unless-stopped
+    labels:
+      - homepage.group=RomanTV
+      - homepage.name=Overseerr
+      - homepage.icon=overseerr.png
+      - homepage.href=https://request.{{ domain_name }}/

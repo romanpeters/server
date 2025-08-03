@@ -1,0 +1,19 @@
+---
+services:
+  homebox:
+    image: ghcr.io/sysadminsmedia/homebox:0.16.0
+    container_name: homebox
+    environment:
+      - HBOX_LOG_LEVEL=info
+      - HBOX_LOG_FORMAT=text
+      - HBOX_WEB_MAX_UPLOAD_SIZE=10
+    volumes:
+      - ./data/:/data/
+    ports:
+      - {{ services.homebox.port }}:7745
+    restart: always
+    labels:
+      - homepage.group=Applications
+      - homepage.name=Homebox
+      - homepage.icon=homebox.png
+      - homepage.href=https://homebox.{{ domain_name }}/

@@ -1,0 +1,16 @@
+---
+services:
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:2.17.5
+    container_name: audiobookshelf
+    environment:
+      - AUDIOBOOKSHELF_UID=1080
+      - AUDIOBOOKSHELF_GID=1080
+    ports:
+      - {{ services.books.port }}:80
+    volumes:
+      - ./config:/config
+      - ./data:/metadata
+      - /mnt/media/books/audiobooks:/audiobooks
+      - /mnt/media/books/ebooks:/ebooks
+    restart: unless-stopped

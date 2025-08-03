@@ -1,0 +1,24 @@
+---
+services:
+  traefik:
+    image: traefik:v2.10.7
+    container_name: traefik
+    command:
+      - --api.insecure=true
+      - --api.dashboard=true
+      - --providers.redis=true
+      - --providers.redis.exposedByDefault=false
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - {{ services.traefik.port }}:8080
+      - 80:80
+    restart: unless-stopped
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - 6379:6379

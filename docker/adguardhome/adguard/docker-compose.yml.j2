@@ -1,0 +1,16 @@
+---
+services:
+  adguardhome:
+    image: adguard/adguardhome:v0.107.43
+    container_name: adguard
+    ports:
+      - {{ services.adguard.port }}:80/tcp
+      - 53:53/udp
+      - 53:53/tcp
+      - 784:784/udp
+      - 853:853/tcp
+      - 3000:3000/tcp
+    volumes:
+      - ./work:/opt/adguardhome/work
+      - ./conf:/opt/adguardhome/conf
+    restart: always

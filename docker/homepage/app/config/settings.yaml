@@ -1,0 +1,18 @@
+---
+title: Start
+headerStyle: clean
+useEqualHeights: true
+cardBlur: sm
+theme: dark
+color: slate
+
+layout:
+  Public:
+    style: row
+    columns: 3
+  Applications:
+    style: row
+    columns: 3
+  Infrastructure:
+    style: row
+    columns: 3

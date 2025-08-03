@@ -1,0 +1,32 @@
+---
+- RTV:
+    - Plex:
+        icon: plex.png
+        href: https://app.plex.tv/
+        siteMonitor: https://app.plex.tv/
+
+    - Request:
+        icon: overseerr.png
+        href: https://request.romanpeters.nl/
+        siteMonitor: https://request.romanpeters.nl/
+
+    - Status:
+        icon: uptime-kuma.png
+        href: https://uptime.romanpeters.nl/status/rtv
+        siteMonitor: https://uptime.romanpeters.nl/status/rtv
+
+    - Download Plex:
+        icon: plex.png
+        href: https://www.plex.tv/media-server-downloads/#plex-app
+        siteMonitor: https://www.plex.tv/media-server-downloads/#plex-app
+
+- Books:
+    - Ebooks:
+        icon: calibre-web.png
+        href: https://ebooks.romanpeters.nl
+        siteMonitor: https://ebooks.romanpeters.nl
+
+    - Audiobooks:
+        icon: audiobookshelf.png
+        href: https://audiobooks.romanpeters.nl
+        siteMonitor: https://audiobooks.romanpeters.nl
