@@ -1,6 +1,5 @@
 # Python development dependencies for this project
 ansible>=2.14
-molecule[docker]>=3.8
 ansible-lint>=6.0
 yamllint>=1.0
 pre-commit>=2.20

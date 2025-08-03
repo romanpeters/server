@@ -1,0 +1,17 @@
+---
+services:
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web:0.6.21-ls259
+    container_name: calibre-web
+    environment:
+      - PUID=1080
+      - PGID=1080
+      - TZ=Etc/UTC
+      - DOCKER_MODS=linuxserver/mods:universal-calibre # optional
+      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 # optional
+    volumes:
+      - ./config:/config
+      - /mount/media/books/ebooks:/books
+    ports:
+      - ${EBOOKS_PORT}:8083
+    restart: unless-stopped

@@ -1,0 +1,2 @@
+name,alias,container,public,host,port,ssl
+subdomain,sub,sub,true,server,80,false

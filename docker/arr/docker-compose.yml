@@ -1,0 +1,75 @@
+---
+services:
+  sonarr:
+    image: linuxserver/sonarr:latest
+    container_name: sonarr
+    volumes:
+      - ./sonarr/config:/config
+      - /mnt/media:/media
+      - /mnt/media/downloads:/downloads
+    environment:
+      - PUID=1080
+      - PGID=1080
+      - TZ=Europe/Amsterdam
+    ports:
+      - ${SONARR_PORT}:8989
+    restart: always
+
+  radarr:
+    image: linuxserver/radarr:latest
+    container_name: radarr
+    volumes:
+      - ./radarr/config:/config
+      - /mnt/media:/media
+      - /mnt/media/downloads:/downloads
+    environment:
+      - PUID=1080
+      - PGID=1080
+      - TZ=Europe/Amsterdam
+    ports:
+      - ${RADARR_PORT}:7878
+    restart: always
+
+  bazarr:
+    image: linuxserver/bazarr:latest
+    container_name: bazarr
+    volumes:
+      - ./bazarr/config/:/config
+      - /mnt/media:/media
+    environment:
+      - PUID=1080
+      - PGID=1080
+      - TZ=Europe/Amsterdam
+    ports:
+      - ${BAZARR_PORT}:6767
+    restart: always
+
+  readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    container_name: readarr
+    volumes:
+      - ./readarr/config:/config
+      - /mnt/media:/media
+      - /mnt/media/downloads:/downloads
+    environment:
+      - PUID=1080
+      - PGID=1080
+      - TZ=Europe/Amsterdam
+    ports:
+      - ${READARR_PORT}:8787
+    restart: always
+
+  readarr-audio:
+    image: lscr.io/linuxserver/readarr:develop
+    container_name: readarr-audio
+    volumes:
+      - ./readarr-audio/config:/config
+      - /mnt/media:/media
+      - /mnt/media/downloads:/downloads
+    environment:
+      - PUID=1080
+      - PGID=1080
+      - TZ=Europe/Amsterdam
+    ports:
+      - ${READARR-AUDIO_PORT}:8787
+    restart: always

@@ -1,0 +1,13 @@
+[DEFAULT]
+ssh_key = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+domain_name = yourdomain.com
+dns_domain = internal
+
+[TERRAFORM]
+unifi_url = https://10.10.10.1
+unifi_username = user
+proxmox_url = https://10.10.10.2:8006/
+
+[ANSIBLE]
+
+[NIXOS]

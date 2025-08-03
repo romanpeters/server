@@ -1,0 +1,17 @@
+---
+services:
+  heimdall:
+    image: linuxserver/heimdall:2.5.8
+    container_name: heimdall_hello
+    environment:
+      - APP_NAME=romanpeters
+    volumes:
+      - ./heimdall:/config
+    ports:
+      - ${HELLO_PORT}:80
+    restart: always
+    labels:
+      - homepage.group=Public
+      - homepage.name=${DOMAIN_NAME}
+      - homepage.icon=heimdall.png
+      - homepage.href=https://hello.${DOMAIN_NAME}/

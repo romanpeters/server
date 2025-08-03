@@ -1,5 +1,5 @@
----
 repos:
+  # Formatters first
   - repo: local
     hooks:
       - id: prettier-yaml
@@ -8,18 +8,28 @@ repos:
         language: system
         types: [yaml]
         exclude: ^\.yamllint$
-
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
-    hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
+        require_serial: true
+        stages: [pre-commit]
 
   - repo: https://github.com/psf/black
     rev: 23.9.1
     hooks:
       - id: black
         language_version: python3
+        require_serial: true
+
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.88.0
+    hooks:
+      - id: terraform_fmt
+        require_serial: true
+
+  # Linters + whitespace fixers
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
 
   - repo: https://github.com/PyCQA/flake8
     rev: 6.1.0
@@ -36,11 +46,41 @@ repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.88.0
     hooks:
-      - id: terraform_fmt
       - id: terraform_validate
       - id: terraform_tflint
 
-  # Local integration test scripts
+  # Auto-stage all changes after mutating hooks
+  - repo: local
+    hooks:
+      - id: git-add-all
+        name: Stage all changes
+        entry: git add -u
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
+  - repo: local
+    hooks:
+      - id: write-dotenvs
+        name: Generate .env files for docker-compose
+        entry: python3 scripts/write_dotenvs.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
+  - repo: local
+    hooks:
+      - id: write-vars
+        name: Generate vars from vars.ini
+        entry: python3 scripts/write_vars.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
+  # Tests last (only run if all previous hooks passed)
   - repo: local
     hooks:
       - id: terraform-tests
@@ -48,10 +88,11 @@ repos:
         entry: /bin/bash tests/test_terraform.sh
         language: script
         pass_filenames: false
-        always_run: true
+        stages: [pre-commit]
+
       - id: ansible-tests
         name: Run Ansible tests
         entry: /bin/bash tests/test_ansible.sh
         language: script
         pass_filenames: false
-        always_run: true
+        stages: [pre-commit]

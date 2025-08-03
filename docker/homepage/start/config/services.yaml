@@ -1,0 +1,83 @@
+---
+- Applications:
+    - Home Assistant:
+        icon: home-assistant.png
+        href: https://home.romanpeters.nl
+        siteMonitor: https://home.romanpeters.nl
+
+    - Photos:
+        icon: synology-photos.png
+        href: https://photos.romanpeters.nl
+        siteMonitor: https://photos.romanpeters.nl
+
+    - Synology:
+        icon: synology-dsm.png
+        href: https://synology.romanpeters.nl
+        siteMonitor: https://synology.romanpeters.nl
+
+    - Protect:
+        icon: unifi-protect.png
+        href: https://protect.romanpeters.nl
+        siteMonitor: https://protect.romanpeters.nl
+
+- Infrastructure:
+    - Proxmox:
+        icon: proxmox.png
+        href: https://proxmox.romanpeters.nl
+        siteMonitor: https://proxmox.romanpeters.nl
+
+    - Proxmox Backup Server:
+        icon: proxmox.png
+        href: https://proxmox-backup.romanpeters.nl
+        siteMonitor: https://proxmox-backup.romanpeters.nl
+
+    - Ansible Automation Platform:
+        icon: ansible.png
+        href: https://ansible.romanpeters.nl
+        siteMonitor: https://ansible.romanpeters.nl
+
+    - UniFi:
+        icon: unifi.png
+        href: https://unifi.romanpeters.nl
+        siteMonitor: https://unifi.romanpeters.nl
+
+    - AdGuard:
+        icon: adguard-home.png
+        href: https://adguard.romanpeters.nl
+        siteMonitor: https://adguard.romanpeters.nl
+
+    - AdGuard 2:
+        icon: adguard-home.png
+        href: https://adguard2.romanpeters.nl
+        siteMonitor: https://adguard2.romanpeters.nl
+
+- Public:
+    - App:
+        icon: homepage.png
+        href: https://app.romanpeters.nl
+        siteMonitor: https://app.romanpeters.nl
+
+    - Uptime:
+        icon: uptime-kuma.png
+        href: https://uptime.romanpeters.nl
+        siteMonitor: https://uptime.romanpeters.nl
+
+    - Request:
+        icon: overseerr.png
+        href: https://request.romanpeters.nl/
+        siteMonitor: https://request.romanpeters.nl/
+
+    - Status:
+        icon: uptime-kuma.png
+        href: https://uptime.romanpeters.nl/status/rtv
+        siteMonitor: https://uptime.romanpeters.nl/status/rtv
+
+    - Ebooks:
+        icon: calibre-web.png
+        href: https://ebooks.romanpeters.nl
+        siteMonitor: https://ebooks.romanpeters.nl
+
+    - Audiobooks:
+        icon: audiobookshelf.png
+        href: https://audiobooks.romanpeters.nl
+        siteMonitor: https://audiobooks.romanpeters.nl

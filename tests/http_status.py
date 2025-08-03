@@ -19,7 +19,7 @@ domain_name = "romanpeters.nl"
 
 
 def main() -> int:
-    csv_path = Path(__file__).parent.parent / "services.csv"
+    csv_path = Path(__file__).parent.parent / "data/services.csv"
     has_red = False
     with open(csv_path, newline="") as csvfile:
         reader = csv.DictReader(csvfile)

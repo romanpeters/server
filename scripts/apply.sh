@@ -13,7 +13,7 @@ if [ ! -f "vars.tfvars" ]; then
 fi
 
 # Load environment variables from .envrc
-source ../.envrc
+source ../data/.envrc
 
 # Initialize Terraform if needed
 if [ ! -d ".terraform" ]; then

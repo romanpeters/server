@@ -1,0 +1,19 @@
+---
+services:
+  tautulli:
+    image: linuxserver/tautulli:2.13.4
+    container_name: tautulli
+    environment:
+      - PUID=1080
+      - PGID=1080
+      - TZ=Europe/Amsterdam
+    ports:
+      - ${TAUTULLI_PORT}:8181
+    volumes:
+      - ./config:/config
+    restart: unless-stopped
+    labels:
+      - homepage.group=RomanTV
+      - homepage.name=Tautulli
+      - homepage.icon=tautulli.png
+      - homepage.href=https://tautulli.${DOMAIN_NAME}/

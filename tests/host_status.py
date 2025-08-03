@@ -27,7 +27,7 @@ def is_reachable(ip: str) -> bool:
 
 
 def main() -> int:
-    csv_path = Path(__file__).parent.parent / "hosts.csv"
+    csv_path = Path(__file__).parent.parent / "data/hosts.csv"
     failed = False
     with open(csv_path, newline="") as csvfile:
         reader = csv.DictReader(csvfile)

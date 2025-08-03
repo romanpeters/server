@@ -5,7 +5,8 @@ venv/
 .ansible/
 
 # Secrets
-.envrc
+data/*
+!data/vars.ini
 
 # Inputs
 hosts.csv

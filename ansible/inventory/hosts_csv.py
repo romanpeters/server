@@ -27,7 +27,7 @@ def load_hosts(csv_path):
 def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.abspath(os.path.join(script_dir, "..", ".."))
-    csv_file = os.path.join(project_root, "hosts.csv")
+    csv_file = os.path.join(project_root, "data/hosts.csv")
     rows = load_hosts(csv_file)
 
     # Build inventory: ubuntu, rhel, and nixos groups
