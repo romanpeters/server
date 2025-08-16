@@ -30,7 +30,7 @@ server {
     }
 
     location @custom_502 {
-        add_header Content-Type text/plain;
-        return 502 "Upstream failed: $upstream_addr\n";
-    }
+        add_header Content-Type text/html;
+        return 502 "<html><body><h1>502 Bad Gateway</h1><p>Upstream failed: $upstream_addr</p></body></html>";
+}
 }
