@@ -14,6 +14,17 @@
   loop: "{{ sites_csv.list }}"
   notify: Restart nginx
 
+# - name: Remove all files in sites-enabled
+#   ansible.builtin.file:
+#     path: /etc/nginx/sites-enabled/
+#     state: absent
+
+- name: Recreate sites-enabled directory
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/
+    state: directory
+    mode: "0755"
+
 - name: Enable sites
   ansible.builtin.file:
     src: "/etc/nginx/sites-available/{{ item.name }}.{{ domain_name }}"

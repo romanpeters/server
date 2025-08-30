@@ -4,23 +4,24 @@ venv/
 # Ansible runtime cache
 .ansible/
 
-# Secrets
-data/*
-!data/vars.ini
+# Infra config
+data/hosts.csv
+data/services.csv
 
-# Inputs
-hosts.csv
-services.csv
+# Generated files
+ansible/vars/main.yml
+nixos/vars.nix
+terraform/vars.tfvars
 
 # Terraform
 *.tfstate
 *.backup
 .terraform/
-*.tfvars
 
 # Ansible
 *.retry
 *.ansible_lint
+*/vars/main.yml
 
 # Logs
 *.log

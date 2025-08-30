@@ -3,6 +3,8 @@
 # change the current working directory to the script's directory if needed
 cd "$(dirname "$0")";
 
+source ../data/.envrc;
+
 # if arg is provided, use it as the playbook file
 if [ -n "$1" ]; then
     playbook_file="$1"

@@ -1,0 +1,35 @@
+[project]
+name = "server"
+version = "0.1.0"
+description = "Server infrastructure management"
+requires-python = ">=3.13"
+dependencies = [
+    "ansible>=2.14",
+    "ansible-lint>=6.0",
+    "yamllint>=1.0",
+    "pre-commit>=2.20",
+    "black>=23.0",
+    "flake8>=6.0",
+    "docker>=6.0",
+    "flake8-pyproject",
+]
+
+[tool.flake8]
+max-line-length = 120
+extend-ignore = "E203, W503"
+exclude = "ansiblelint_wrapper 2.py"
+
+[tool.prettier]
+tabWidth = 2
+useTabs = false
+endOfLine = "lf"
+
+[tool.yamllint]
+extends = "default"
+
+[tool.yamllint.rules]
+line-length = "{max: 120, level: warning}"
+comments = "{min-spaces-from-content: 1}"
+comments-indentation = "disable"
+braces = "{max-spaces-inside: 1}"
+"octal-values" = "{forbid-implicit-octal: true, forbid-explicit-octal: true}"

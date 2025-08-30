@@ -1,3 +1,4 @@
+---
 repos:
   # Formatters first
   - repo: local
@@ -35,7 +36,7 @@ repos:
     rev: 6.1.0
     hooks:
       - id: flake8
-        additional_dependencies: ["ansible"]
+        additional_dependencies: ["ansible", "flake8-pyproject"]
 
   - repo: https://github.com/adrienverge/yamllint
     rev: v1.32.0
@@ -49,50 +50,19 @@ repos:
       - id: terraform_validate
       - id: terraform_tflint
 
-  # Auto-stage all changes after mutating hooks
-  - repo: local
-    hooks:
-      - id: git-add-all
-        name: Stage all changes
-        entry: git add -u
-        language: system
-        pass_filenames: false
-        always_run: true
-        stages: [pre-commit]
-
-  - repo: local
-    hooks:
-      - id: write-dotenvs
-        name: Generate .env files for docker-compose
-        entry: python3 scripts/write_dotenvs.py
-        language: system
-        pass_filenames: false
-        always_run: true
-        stages: [pre-commit]
-
-  - repo: local
-    hooks:
-      - id: write-vars
-        name: Generate vars from vars.ini
-        entry: python3 scripts/write_vars.py
-        language: system
-        pass_filenames: false
-        always_run: true
-        stages: [pre-commit]
-
   # Tests last (only run if all previous hooks passed)
   - repo: local
     hooks:
       - id: terraform-tests
         name: Run Terraform tests
-        entry: /bin/bash tests/test_terraform.sh
-        language: script
+        entry: make check/terraform
+        language: system
         pass_filenames: false
         stages: [pre-commit]
 
       - id: ansible-tests
         name: Run Ansible tests
-        entry: /bin/bash tests/test_ansible.sh
-        language: script
+        entry: make check/ansible
+        language: system
         pass_filenames: false
         stages: [pre-commit]

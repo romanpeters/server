@@ -21,7 +21,8 @@
       args:
         chdir: "{{ nix_configs_dir }}"
       ansible.builtin.command: >-
-        nix-build {{ inventory_hostname }}.nix -o result-{{ inventory_hostname }}
+        nix-build {{ inventory_hostname }}.nix
+        -o result-{{ inventory_hostname }}
       register: nix_build
 
     - name: Copy Nix closure to remote host
@@ -29,7 +30,8 @@
       args:
         chdir: "{{ nix_configs_dir }}"
       ansible.builtin.command: >-
-        nix-copy-closure --to {{ inventory_hostname }} result-{{ inventory_hostname }}
+        nix-copy-closure --to {{ inventory_hostname }}
+        result-{{ inventory_hostname }}
     - name: Activate NixOS configuration on remote host
       become: true
       ansible.builtin.command: >-

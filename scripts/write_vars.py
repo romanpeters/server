@@ -7,6 +7,7 @@ from configparser import ConfigParser
 from pathlib import Path
 from typing import Dict
 import sys
+import subprocess
 
 
 def merge_sections(
@@ -79,6 +80,7 @@ def main() -> None:
     nix_vars = merge_sections(default_section, sections.get("nixos", {}))
 
     write_vars(terraform_vars, "terraform/vars.tfvars", "tfvars")
+    subprocess.run(["terraform", "fmt", Path("terraform/vars.tfvars")], check=True)
     write_vars(ansible_vars, "ansible/vars/main.yml", "ansible")
     write_vars(nix_vars, "nixos/vars.nix", "nixos")
 
