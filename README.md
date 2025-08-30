@@ -85,4 +85,26 @@ The `Jenkinsfile` in the repository defines the CI/CD pipeline, which automates 
 3. **NixOS Deployment:** Deploys NixOS configurations to the target hosts.
 4. **Webserver Configuration:** Configures the webserver using Ansible.
 
+## Secrets Management
+
+This project requires secrets such as API keys and passwords. These are managed via environment variables loaded from the `.envrc` file. You have two options for providing these secrets:
+
+1.  **Directly in `.envrc` (Recommended for simplicity):**
+
+    You can directly set the environment variables in the `.envrc` file. For example:
+
+    ```bash
+    export TF_VAR_cloudflare_api_key="your-api-key"
+    ```
+
+2.  **Using `gopass` (Optional):**
+
+    If you use `gopass` for secret management, you can keep the existing setup. The `.envrc` file is pre-configured to use `gopass` to fetch secrets. For example, to set the Cloudflare API key, you would run:
+
+    ```bash
+    gopass insert cloudflare/tf_api_key
+    ```
+
+    This will prompt you to enter the API key, which will then be securely stored in `gopass` and made available to the project.
+
 ---

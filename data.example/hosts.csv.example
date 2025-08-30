@@ -1,2 +1,0 @@
-name,friendly_name,ip,mac,vlan,os
-server,Server,10.10.10.10,aa:bb:cc:dd:ee:ff,10,ubuntu

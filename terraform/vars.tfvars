@@ -1,0 +1,7 @@
+### This file is generated from data/vars.ini
+ssh_key        = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAvUHmajV0+ZqEzAs5nl7vCw+9DmK6LM29zokZFMECuH romanpeters@masterkey"
+domain_name    = "romanpeters.nl"
+dns_domain     = "internal"
+unifi_url      = "https://10.10.10.1"
+unifi_username = "terraform"
+proxmox_url    = "https://10.10.10.250:8006/"

@@ -21,7 +21,8 @@
 - name: Copy Nix closure to remote host
   delegate_to: localhost
   ansible.builtin.command: >-
-    nix-copy-closure --to {{ inventory_hostname }} result-{{ inventory_hostname }}
+    nix-copy-closure --to {{ inventory_hostname }}
+    result-{{ inventory_hostname }}
   args:
     chdir: "{{ nix_configs_dir }}"
 

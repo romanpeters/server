@@ -26,6 +26,9 @@
     name: "Certbot automatic renewal"
     minute: "0"
     hour: "0"
-    job: "certbot renew --quiet --dns-cloudflare --dns-cloudflare-credentials /etc/nginx/cloudflare.ini --post-hook 'systemctl reload nginx'"
+    job: >-
+      certbot renew --quiet --dns-cloudflare
+      --dns-cloudflare-credentials /etc/nginx/cloudflare.ini
+      --post-hook 'systemctl reload nginx'
     user: root
     state: present

@@ -8,7 +8,9 @@
 
 - name: Ensure config directory exists
   ansible.builtin.file:
-    path: "{{ ansible_env.XDG_CONFIG_HOME | default(ansible_env.HOME + '/.config') }}"
+    path: >-
+      {{ ansible_env.XDG_CONFIG_HOME | default(ansible_env.HOME +
+      '/.config') }}
     state: directory
     owner: "{{ ansible_env.USER }}"
     mode: "0755"
@@ -16,6 +18,8 @@
 - name: Deploy topgrade config file
   ansible.builtin.template:
     src: topgrade.toml.j2
-    dest: "{{ ansible_env.XDG_CONFIG_HOME | default(ansible_env.HOME + '/.config') }}/topgrade.toml"
+    dest: >-
+      {{ ansible_env.XDG_CONFIG_HOME | default(ansible_env.HOME +
+      '/.config') }}/topgrade.toml
     owner: "{{ ansible_env.USER }}"
     mode: "0644"
