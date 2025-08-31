@@ -5,6 +5,7 @@
   ansible.builtin.package:
     name: topgrade
     state: present
+  when: '"topgrade" in configure'
 
 - name: Ensure config directory exists
   ansible.builtin.file:
@@ -14,6 +15,7 @@
     state: directory
     owner: "{{ ansible_env.USER }}"
     mode: "0755"
+  when: '"topgrade" in configure'
 
 - name: Deploy topgrade config file
   ansible.builtin.template:
@@ -23,3 +25,4 @@
       '/.config') }}/topgrade.toml
     owner: "{{ ansible_env.USER }}"
     mode: "0644"
+  when: '"topgrade" in configure'

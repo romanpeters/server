@@ -3,6 +3,7 @@
 # dependencies = [
 # ]
 # ///
+import argparse
 from configparser import ConfigParser
 from pathlib import Path
 from typing import Dict
@@ -56,7 +57,7 @@ def write_vars(vars_dict: Dict[str, str], filepath: str, format_type: str) -> No
         sys.exit(1)
 
     lines = []
-    lines.append("### This file is generated from data/vars.ini")
+    lines.append("### This file is generated from vars.ini")
     if format_type == "nixos":
         lines.append("{")
     for k, v in vars_dict.items():
@@ -68,21 +69,33 @@ def write_vars(vars_dict: Dict[str, str], filepath: str, format_type: str) -> No
 
 
 def main() -> None:
-    vars_ini_path = Path(__file__).parent.parent / "data/vars.ini"
+    parser = argparse.ArgumentParser(description="Generate variable files.")
+    parser.add_argument(
+        "--format",
+        choices=["terraform", "ansible", "nixos"],
+        help="Specify the format to generate variables for.",
+    )
+    args = parser.parse_args()
+
+    vars_ini_path = Path(__file__).parent.parent / "vars.ini"
     if not vars_ini_path.exists():
         print(f"Error: vars.ini not found at {vars_ini_path}", file=sys.stderr)
         sys.exit(1)
 
     default_section, sections = read_ini(vars_ini_path)
 
-    terraform_vars = merge_sections(default_section, sections.get("terraform", {}))
-    ansible_vars = merge_sections(default_section, sections.get("ansible", {}))
-    nix_vars = merge_sections(default_section, sections.get("nixos", {}))
+    if not args.format or args.format == "terraform":
+        terraform_vars = merge_sections(default_section, sections.get("terraform", {}))
+        write_vars(terraform_vars, "terraform/vars.tfvars", "tfvars")
+        subprocess.run(["terraform", "fmt", Path("terraform/vars.tfvars")], check=True)
 
-    write_vars(terraform_vars, "terraform/vars.tfvars", "tfvars")
-    subprocess.run(["terraform", "fmt", Path("terraform/vars.tfvars")], check=True)
-    write_vars(ansible_vars, "ansible/vars/main.yml", "ansible")
-    write_vars(nix_vars, "nixos/vars.nix", "nixos")
+    if not args.format or args.format == "ansible":
+        ansible_vars = merge_sections(default_section, sections.get("ansible", {}))
+        write_vars(ansible_vars, "ansible/vars/main.yml", "ansible")
+
+    if not args.format or args.format == "nixos":
+        nix_vars = merge_sections(default_section, sections.get("nixos", {}))
+        write_vars(nix_vars, "nixos/vars.nix", "nixos")
 
 
 if __name__ == "__main__":

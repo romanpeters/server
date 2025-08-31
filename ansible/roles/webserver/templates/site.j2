@@ -1,23 +1,23 @@
 server {
     listen 443 ssl;
-    server_name {{ item.name }}.{{ domain_name }} {% if item.alias %}{{ item.alias }}.{{ domain_name }}{% endif %};
+    server_name {{ item.key }}.{{ domain_name }} {% if item.value.get('alias') %}{{ item.value.get('alias') }}.{{ domain_name }}{% endif %};
 
     ssl_certificate /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{ domain_name }}/privkey.pem;
 
     location / {
-{% if item.alias %}
-        if ($host != '{{ item.name }}.{{ domain_name }}') {
-            return 301 https://{{ item.name }}.{{ domain_name }}$request_uri;
+{% if item.value.get('alias') %}
+        if ($host != '{{ item.key }}.{{ domain_name }}') {
+            return 301 https://{{ item.key }}.{{ domain_name }}$request_uri;
         }
 {% endif %}
 
-        proxy_pass {{ 'https://' if item.ssl == 'true' else 'http://' }}{{ item.host }}:{{ item.port }};
-{% if item.ssl == 'true' %}
+        proxy_pass {{ 'https://' if item.value.ssl else 'http://' }}{{ item.value.host }}:{{ item.value.port }};
+{% if item.value.ssl %}
         proxy_ssl_verify off;
 {% endif %}
-{% if lookup('file', 'files/custom_sites/{{ item.name }}.{{ domain_name }}', errors='ignore') %}
-        {{ lookup('file', 'files/custom_sites/{{ item.name }}.{{ domain_name }}') }}
+{% if lookup('file', 'files/custom_sites/{{ item.key }}.{{ domain_name }}', errors='ignore') %}
+        {{ lookup('file', 'files/custom_sites/{{ item.key }}.{{ domain_name }}') }}
 {% else %}
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;

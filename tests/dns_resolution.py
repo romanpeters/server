@@ -1,9 +1,10 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # dependencies = [
+#     "pyyaml"
 # ]
 # ///
-import csv
+import yaml
 import socket
 import sys
 from pathlib import Path
@@ -19,13 +20,14 @@ def is_tailscale_ip(ip: str) -> bool:
 
 
 def main() -> int:
-    csv_path = Path(__file__).parent.parent / "data/hosts.csv"
+    yml_path = Path(__file__).parent.parent / "hosts.yml"
     has_red = False
-    with open(csv_path, newline="") as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            name = row["name"]
-            expected_ip = row["ip"]
+    with open(yml_path) as ymlfile:
+        hosts = yaml.safe_load(ymlfile)
+        for name, details in hosts.items():
+            expected_ip = details.get("ip")
+            if not expected_ip:
+                continue
             try:
                 resolved_ip = socket.gethostbyname(name)
                 if resolved_ip == expected_ip:

@@ -1,4 +1,5 @@
 ---
 # Roles to apply on 'server'
-roles_to_run:
-  - topgrade
+configure:
+  #  - topgrade
+  - docker

@@ -1,0 +1,24 @@
+{
+    "devices": [
+        {
+            "screen_id": "kgnplc18i4qcbtl44tn34gfm6i",
+            "name": "YouTube on TV",
+            "offset": 0
+        }
+    ],
+    "apikey": "",
+    "skip_categories": [
+        "sponsor",
+        "outro",
+        "intro",
+        "music_offtopic",
+        "exclusive_access",
+        "selfpromo"
+    ],
+    "channel_whitelist": [],
+    "skip_count_tracking": true,
+    "mute_ads": true,
+    "skip_ads": true,
+    "auto_play": true,
+    "join_name": "iSponsorBlockTV"
+}

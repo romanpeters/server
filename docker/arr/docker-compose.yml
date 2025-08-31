@@ -4,7 +4,7 @@ services:
     image: linuxserver/sonarr:latest
     container_name: sonarr
     volumes:
-      - ./sonarr/config:/config
+      - ./sonarr:/config
       - /mnt/media:/media
       - /mnt/media/downloads:/downloads
     environment:
@@ -19,7 +19,7 @@ services:
     image: linuxserver/radarr:latest
     container_name: radarr
     volumes:
-      - ./radarr/config:/config
+      - ./radarr:/config
       - /mnt/media:/media
       - /mnt/media/downloads:/downloads
     environment:
@@ -34,7 +34,7 @@ services:
     image: linuxserver/bazarr:latest
     container_name: bazarr
     volumes:
-      - ./bazarr/config/:/config
+      - ./bazarr:/config
       - /mnt/media:/media
     environment:
       - PUID=1080
@@ -48,7 +48,7 @@ services:
     image: lscr.io/linuxserver/readarr:develop
     container_name: readarr
     volumes:
-      - ./readarr/config:/config
+      - ./readarr:/config
       - /mnt/media:/media
       - /mnt/media/downloads:/downloads
     environment:
@@ -63,7 +63,7 @@ services:
     image: lscr.io/linuxserver/readarr:develop
     container_name: readarr-audio
     volumes:
-      - ./readarr-audio/config:/config
+      - ./readarr-audio:/config
       - /mnt/media:/media
       - /mnt/media/downloads:/downloads
     environment:
@@ -71,5 +71,5 @@ services:
       - PGID=1080
       - TZ=Europe/Amsterdam
     ports:
-      - ${READARR-AUDIO_PORT}:8787
+      - ${READARR_AUDIO_PORT}:8787
     restart: always

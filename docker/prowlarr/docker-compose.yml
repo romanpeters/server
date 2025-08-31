@@ -1,3 +1,4 @@
+---
 services:
   gluetun:
     image: qmcgaw/gluetun
@@ -9,15 +10,15 @@ services:
     volumes:
       - ./gluetun:/gluetun
     environment:
-      - TZ=Europe/Amsterdam
-      - VPN_SERVICE_PROVIDER=nordvpn
-      - VPN_TYPE=openvpn # or wireguard
-      - OPENVPN_USER=${OPENVPN_USER}
-      - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
-      - SERVER_COUNTRIES=Romania
+      TZ: Europe/Amsterdam
+      VPN_SERVICE_PROVIDER: nordvpn
+      VPN_TYPE: openvpn # or wireguard
+      OPENVPN_USER: ${OPENVPN_USER}
+      OPENVPN_PASSWORD: ${OPENVPN_PASSWORD}
+      SERVER_COUNTRIES: Romania
     ports:
-      - ${TRANSMISSION_PORT}:9091
-      - ${PROWLARR_PORT}:9696
+      - ${TRANSMISSION_PORT}:9091 # transmission
+      - ${PROWLARR_PORT}:9696 # prowlarr
     restart: always
 
   transmission:
@@ -29,19 +30,25 @@ services:
       - PGID=1080
       - TZ=Europe/Amsterdam
     volumes:
-      - ./transmission:/config
+      - ./transmission/config:/config
       - /mnt/media/downloads:/downloads
       - /mnt/media/downloads/watch:/watch
+      # - /mnt/transmission/watch:/watch
+      # - /mnt/transmission:/downloads
+    # ports:
+    #   - 9091:9091
+    #   - 51413:51413
+    #   - 51413:51413/udp
     restart: always
 
   prowlarr:
-    image: lscr.io/linuxserver/prowlarr
+    image: lscr.io/linuxserver/prowlarr:develop # :nightly-0.4.3.1898-ls382
     container_name: prowlarr
     network_mode: service:gluetun
     volumes:
-      - ./prowlarr:/config
+      - ./prowlarr/config:/config
     environment:
-      - PUID=1000
-      - PGID=1000
       - TZ=Europe/Amsterdam
+    # ports:
+    #   - 9696:9696
     restart: always

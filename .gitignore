@@ -5,13 +5,14 @@ venv/
 .ansible/
 
 # Infra config
-data/hosts.csv
+data/hosts.yml
 data/services.csv
 
 # Generated files
 ansible/vars/main.yml
 nixos/vars.nix
 terraform/vars.tfvars
+**/.env
 
 # Terraform
 *.tfstate

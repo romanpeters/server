@@ -1,10 +1,10 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # dependencies = [
+#   "pyyaml",
 # ]
 # ///
-import csv
-
+import yaml
 import sys
 from pathlib import Path
 import subprocess
@@ -28,24 +28,33 @@ def is_reachable(ip: str) -> bool:
 
 
 def main() -> int:
-    csv_path = Path(__file__).parent.parent / "data/hosts.csv"
+    yml_path = Path(__file__).parent.parent / "hosts.yml"
     red_alert = False
-    with open(csv_path, newline="") as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            name = row["name"]
-            ip = row["ip"]
-            os = row.get("os")
-            if is_reachable(ip):
-                status = GREEN + "REACHABLE" + RESET
-            elif os == "unmanaged":
-                status = ORANGE + "UNREACHABLE" + RESET
-            else:
-                status = RED + "UNREACHABLE" + RESET
-                red_alert = True
 
-            status_output = f"{name:15} {ip:15} {status}"
-            print(status_output)
+    try:
+        with open(yml_path, "r") as f:
+            hosts_data = yaml.safe_load(f)
+    except FileNotFoundError:
+        print(f"Error: hosts.yml not found at {yml_path}", file=sys.stderr)
+        sys.exit(1)
+
+    for name, details in hosts_data.items():
+        ip = details.get("ip")
+        os_val = details.get("os")
+
+        if not ip:
+            continue
+
+        if is_reachable(ip):
+            status = GREEN + "REACHABLE" + RESET
+        elif os_val == "unmanaged":
+            status = ORANGE + "UNREACHABLE" + RESET
+        else:
+            status = RED + "UNREACHABLE" + RESET
+            red_alert = True
+
+        status_output = f"{name:15} {ip:15} {status}"
+        print(status_output)
 
     return 1 if red_alert else 0
 

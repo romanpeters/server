@@ -43,3 +43,12 @@ and it will automatically install the dependencies listed in the `dependencies` 
 
 ## Ansible
 Use Fully Qualified Module Names (FQMN) for Ansible tasks.
+
+## Restrictions
+You are not allowed to edit or remove these files:
+- data/hosts.yml
+- data/services.yml
+- terraform/terraform.tfstate
+Assume their content is correct. If a change is really needed, please ask.
+
+You are allowed to run any (safe) command that you want.

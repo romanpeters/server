@@ -1,10 +1,11 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # dependencies = [
-#     "requests"
+#     "requests",
+#     "pyyaml"
 # ]
 # ///
-import csv
+import yaml
 import sys
 from pathlib import Path
 
@@ -19,12 +20,15 @@ domain_name = "romanpeters.nl"
 
 
 def main() -> int:
-    csv_path = Path(__file__).parent.parent / "data/services.csv"
+    yml_path = Path(__file__).parent.parent / "services.yml"
     has_red = False
-    with open(csv_path, newline="") as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            name = row["name"]
+    with open(yml_path) as ymlfile:
+        services = yaml.safe_load(ymlfile)
+        for name, details in services.items():
+            port = details.get("port")
+            if not port:
+                continue
+
             url = f"https://{name}.{domain_name}"
             try:
                 response = requests.get(url, timeout=5)

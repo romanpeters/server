@@ -1,4 +1,0 @@
----
-# Roles to apply on 'mac-mini'
-roles_to_run:
-  - lima
