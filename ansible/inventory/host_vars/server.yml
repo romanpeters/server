@@ -1,6 +1,9 @@
 ---
 # Roles to apply on 'server'
 configure:
-  #  - topgrade
+  - base
+  - topgrade
   - base
   - docker
+  - tailscale
+  - atuin

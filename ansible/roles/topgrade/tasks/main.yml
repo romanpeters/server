@@ -1,11 +1,35 @@
 ---
 # tasks file for topgrade role
 
-- name: Ensure topgrade is installed
-  ansible.builtin.package:
-    name: topgrade
-    state: present
-  when: '"topgrade" in configure'
+- name: Install topgrade
+  block:
+    - name: Try to install topgrade from package manager
+      become: true
+      ansible.builtin.package:
+        name: topgrade
+        state: present
+  rescue:
+    - name: Install rustup
+      ansible.builtin.shell:
+        cmd: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y"
+      args:
+        creates: "{{ ansible_env.HOME }}/.cargo/bin/cargo"
+
+    - name: Set default rust toolchain
+      ansible.builtin.command:
+        cmd: "{{ ansible_env.HOME }}/.cargo/bin/rustup default stable"
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+      args:
+        creates: "{{ ansible_env.HOME }}/.rustup/toolchains/stable-x86_64-unknown-linux-gnu"
+
+    - name: Install topgrade using cargo
+      ansible.builtin.command:
+        cmd: "{{ ansible_env.HOME }}/.cargo/bin/cargo install topgrade"
+      args:
+        creates: "{{ ansible_env.HOME }}/.cargo/bin/topgrade"
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
 
 - name: Ensure config directory exists
   ansible.builtin.file:
@@ -15,7 +39,6 @@
     state: directory
     owner: "{{ ansible_env.USER }}"
     mode: "0755"
-  when: '"topgrade" in configure'
 
 - name: Deploy topgrade config file
   ansible.builtin.template:
@@ -25,4 +48,3 @@
       '/.config') }}/topgrade.toml
     owner: "{{ ansible_env.USER }}"
     mode: "0644"
-  when: '"topgrade" in configure'

@@ -32,6 +32,13 @@
     owner: "{{ username }}"
     group: "{{ username }}"
 
+- name: Create zshenv file
+  ansible.builtin.copy:
+    src: "{{ lookup('env', 'HOME') }}/.zshenv"
+    dest: "/home/{{ username }}/.zshenv"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
 - name: Change user's shell to Zsh
   ansible.builtin.user:
     name: "{{ username }}"

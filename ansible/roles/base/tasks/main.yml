@@ -12,9 +12,6 @@
 - name: Include shell tasks
   ansible.builtin.include_tasks: shell.yml
 
-- name: Include atuin tasks
-  ansible.builtin.include_tasks: atuin.yml
-
 - name: Include config tasks
   ansible.builtin.include_tasks: config.yml
 

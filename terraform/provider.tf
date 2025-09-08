@@ -17,6 +17,10 @@ terraform {
       source  = "hashicorp/http"
       version = "~> 3.0"
     }
+    tailscale = {
+      source  = "tailscale/tailscale"
+      version = "~> 0"
+    }
   }
 }
 
@@ -34,4 +38,9 @@ provider "unifi" {
 
 provider "cloudflare" {
   api_token = var.cloudflare_api_key
+}
+
+provider "tailscale" {
+  oauth_client_id     = var.tailscale_oauth_client_id
+  oauth_client_secret = var.tailscale_oauth_client_secret
 }

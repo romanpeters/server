@@ -6,15 +6,21 @@
 # Variables
 PRE_COMMIT_CONFIG = .pre-commit-config.yaml
 SHELL := /bin/bash
+
+ROLE ?=
+ROLE_CMD = $(if $(ROLE),-e "role_to_run=$(ROLE)",)
+HOST_LIST := $(if $(ROLE),$(shell grep -l "  - $(ROLE)" ansible/inventory/host_vars/*.yml | awk -F'[/.]' '{print $(NF-1)}' | paste -sd, -),)
+LIMIT_FOR_ROLE = $(if $(HOST_LIST),--limit $(HOST_LIST),)
+
 LIMIT ?=
-LIMIT_CMD = $(if $(LIMIT),--limit $(LIMIT),)
+LIMIT_CMD = $(if $(LIMIT),--limit $(LIMIT),$(LIMIT_FOR_ROLE))
 
 # Phony targets
 .PHONY: help lint vars clean-dotenvs terraform ansible webserver nixos status check docker \
 	check/ansible check/terraform status/dns status/http status/hosts inventory
 
 help:
-	@echo "Usage: make [target] [LIMIT=host]"
+	@echo "Usage: make [target] [LIMIT=host] [ROLE=role]"
 	@echo ""
 	@echo "Targets:"
 	@echo "  pre-commit       Lint the project"
@@ -57,7 +63,16 @@ clean-dotenvs: ## Remove generated .env files
 
 
 
-terraform: vars-terraform ## Apply Terraform changes
+terraform: terraform/apply ## Apply Terraform changes
+
+terraform/plan: vars-terraform ## Plan Terraform changes
+	t@echo "Planning Terraform changes..."
+	@. .envrc && \
+	 cd terraform && \
+	 terraform init && \
+	 terraform plan -var-file=vars.tfvars
+
+terraform/apply: vars-terraform ## Apply Terraform changes
 	@echo "Applying Terraform changes..."
 	@. .envrc && \
 	 cd terraform && \
@@ -71,7 +86,7 @@ ansible: vars-ansible vars-dotenvs ## Run Ansible playbooks
 	@echo "Running Ansible playbooks..."; \
 	trap '$(MAKE) clean-dotenvs' EXIT; \
 	. .envrc && \
-	(cd ansible && ansible-playbook playbooks/configure_hosts.yml -e @vars/main.yml $(LIMIT_CMD)) \
+	(cd ansible && ansible-playbook playbooks/configure_hosts.yml -e @vars/main.yml $(LIMIT_CMD) $(ROLE_CMD)) \
 	&& $(MAKE) status/http && $(MAKE) status/hosts
 
 webserver: vars-ansible ## Run the webserver playbook
@@ -97,7 +112,7 @@ inventory: ## Show the ansible inventory
 	@echo "Showing the ansible inventory..."
 	@. .envrc && \
 	 cd ansible && \
-	 ansible-inventory --list $(LIMIT_CMD)
+	ansible-inventory --list $(LIMIT_CMD)
 
 status/dns: ## Check the status of the DNS
 	@echo "Checking the status of the DNS..."

@@ -8,3 +8,4 @@
       ansible.builtin.include_role:
         name: "{{ item }}"
       loop: "{{ configure | default([]) }}"
+      when: role_to_run is not defined or item == role_to_run

@@ -11,6 +11,24 @@ import sys
 import subprocess
 
 
+import json
+
+
+def get_terraform_output(variable: str) -> str:
+    try:
+        result = subprocess.run(
+            ["terraform", "output", "-json"],
+            capture_output=True,
+            text=True,
+            check=True,
+            cwd="terraform",
+        )
+        outputs = json.loads(result.stdout)
+        return outputs.get(variable, {}).get("value", "")
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return ""
+
+
 def merge_sections(
     default_section: Dict[str, str], specific_section: Dict[str, str]
 ) -> Dict[str, str]:
@@ -91,6 +109,9 @@ def main() -> None:
 
     if not args.format or args.format == "ansible":
         ansible_vars = merge_sections(default_section, sections.get("ansible", {}))
+        tailscale_authkey = get_terraform_output("tailscale_authkey")
+        if tailscale_authkey:
+            ansible_vars["tailscale_authkey"] = tailscale_authkey
         write_vars(ansible_vars, "ansible/vars/main.yml", "ansible")
 
     if not args.format or args.format == "nixos":

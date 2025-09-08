@@ -1,6 +1,7 @@
 # Topgrade Configuration File
 # Managed by Ansible role topgrade.
-#
-# Customize as needed. For example:
-# [general]
-# keep_going = false
+
+[misc]
+disable = ["uv", "pipx", "yarn", "pnpm"]
+assume_yes = true
+no_retry = true
