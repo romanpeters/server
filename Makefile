@@ -56,6 +56,7 @@ clean-dotenvs: ## Remove generated .env files
 	@find docker -name ".env" -type f -delete
 
 
+
 terraform: vars-terraform ## Apply Terraform changes
 	@echo "Applying Terraform changes..."
 	@. .envrc && \
@@ -70,31 +71,27 @@ ansible: vars-ansible vars-dotenvs ## Run Ansible playbooks
 	@echo "Running Ansible playbooks..."; \
 	trap '$(MAKE) clean-dotenvs' EXIT; \
 	. .envrc && \
-	(cd ansible && ansible-playbook playbooks/configure_hosts.yml $(LIMIT_CMD)); \
-	$(MAKE) status/http; \
-	$(MAKE) status/hosts
+	(cd ansible && ansible-playbook playbooks/configure_hosts.yml -e @vars/main.yml $(LIMIT_CMD)) \
+	&& $(MAKE) status/http && $(MAKE) status/hosts
 
 webserver: vars-ansible ## Run the webserver playbook
 	@echo "Running the webserver playbook..."; \
 	trap '$(MAKE) clean-dotenvs' EXIT; \
 	. .envrc && \
-	(cd ansible && ansible-playbook playbooks/configure_webserver.yml $(LIMIT_CMD)); \
+	(cd ansible && ansible-playbook playbooks/configure_webserver.yml -e @vars/main.yml $(LIMIT_CMD)); \
 	$(MAKE) status/http
 
 nixos: vars-nixos ## Run the nixos_deploy playbook
 	@echo "Running the nixos_deploy playbook..."; \
 	trap '$(MAKE) clean-dotenvs' EXIT; \
 	. .envrc && \
-	(cd ansible && ansible-playbook playbooks/deploy_nixos.yml $(LIMIT_CMD))
+	(cd ansible && ansible-playbook playbooks/deploy_nixos.yml -e @vars/main.yml $(LIMIT_CMD))
 
 docker: vars-ansible vars-dotenvs ## Run the docker playbook
 	@echo "Running the docker playbook..."; \
 	trap '$(MAKE) clean-dotenvs' EXIT; \
 	. .envrc && \
-	(cd ansible && ansible-playbook playbooks/configure_docker.yml $(LIMIT_CMD))
-
-
-
+	(cd ansible && ansible-playbook playbooks/configure_docker.yml -e @vars/main.yml $(LIMIT_CMD))
 
 inventory: ## Show the ansible inventory
 	@echo "Showing the ansible inventory..."

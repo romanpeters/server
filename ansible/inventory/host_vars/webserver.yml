@@ -1,4 +1,5 @@
 ---
 # Roles to apply on 'webserver'
 configure:
+  - base
   - webserver

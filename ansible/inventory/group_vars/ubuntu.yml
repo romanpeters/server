@@ -1,0 +1,6 @@
+---
+ubuntu_packages:
+  - lolcat
+  - command-not-found
+  - duf
+  - unattended-upgrades

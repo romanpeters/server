@@ -1,16 +1,16 @@
-# Start from the official n8n Docker image
-FROM n8nio/n8n:latest
+FROM n8nio/n8n:1.110.0
 
-# Switch to the root user to install software
+ARG TYPST_VERSION=0.13.1
+
 USER root
 
-# Download and install Typst
-# We use the 'musl' version because the n8n base image (Alpine Linux) uses musl libc.
-RUN wget https://github.com/typst/typst/releases/latest/download/typst-x86_64-unknown-linux-musl.tar.gz && \
-    tar -xzf typst-x86_64-unknown-linux-musl.tar.gz && \
-    mv typst-x86_64-unknown-linux-musl/typst /usr/local/bin/ && \
-    chmod +x /usr/local/bin/typst && \
-    rm -rf typst-x86_64-unknown-linux-musl*
+RUN apk add --no-cache coreutils curl xz
 
-# Switch back to the non-priveleged node user
-USER node:wq
+RUN curl -L -o typst.tar.xz "https://github.com/typst/typst/releases/download/v${TYPST_VERSION}/typst-x86_64-unknown-linux-musl.tar.xz" && \
+    tar -xf typst.tar.xz && \
+    mv typst-*/typst /usr/local/bin/ && \
+    chmod +x /usr/local/bin/typst && \
+    rm typst.tar.xz && \
+    rm -r typst-*/
+
+USER node

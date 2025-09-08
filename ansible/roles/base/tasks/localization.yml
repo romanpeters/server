@@ -1,0 +1,9 @@
+---
+- name: Ensure the locale exists
+  community.general.locale_gen:
+    name: en_US.UTF-8
+  when: ansible_facts['os_family'] != 'RedHat'
+
+- name: Set timezone
+  community.general.timezone:
+    name: "{{ base_timezone }}"

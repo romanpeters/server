@@ -44,6 +44,9 @@ def main() -> int:
             except requests.ConnectionError:
                 print(f"{name:15} {url:40} {RED}NOT REACHABLE{RESET}")
                 has_red = True
+            except requests.ReadTimeout:
+                print(f"{name:15} {url:40} {RED}TIMEOUT{RESET}")
+                has_red = True
     return 1 if has_red else 0
 
 

@@ -9,13 +9,15 @@
 
 - name: Get unique docker services for this host
   ansible.builtin.set_fact:
-    docker_services: "{{ docker_services | default([]) + [item.value.docker] }}"
+    docker_services: "{{ docker_services | default([]) + [service.value.docker] }}"
   with_dict: "{{ services_data }}"
+  loop_control:
+    loop_var: service
   when:
-    - inventory_hostname == item.value.host
-    - item.value.docker is defined
-    - item.value.docker != ''
-    - item.value.docker != false
+    - inventory_hostname == service.value.host
+    - service.value.docker is defined
+    - service.value.docker != ''
+    - service.value.docker != false
 
 - name: Create /srv/docker directory
   become: true
@@ -28,34 +30,41 @@
 
 - name: Place Docker Compose files
   ansible.builtin.copy:
-    src: "{{ playbook_dir }}/../../docker/{{ item }}/"
-    dest: "/srv/docker/{{ item }}"
+    src: "{{ playbook_dir }}/../../docker/{{ service }}/"
+    dest: "/srv/docker/{{ service }}"
     owner: root
     group: docker
-  loop: "{{ docker_services | unique }}"
-
-- name: Check for .env files
-  ansible.builtin.stat:
-    path: "/srv/docker/{{ item }}/.env"
-  loop: "{{ docker_services | unique }}"
-  register: env_files
-
-- name: Secure .env files
-  ansible.builtin.file:
-    path: "{{ item.stat.path }}"
-    mode: "0640"
-  loop: "{{ env_files.results }}"
-  when: item.stat.exists
-
-- name: Set permissions for docker-compose.yml
-  ansible.builtin.file:
-    path: "/srv/docker/{{ item }}/docker-compose.yml"
     mode: "0660"
+    directory_mode: "0775"
   loop: "{{ docker_services | unique }}"
+  loop_control:
+    loop_var: service
+
+- name: Get docker-compose bind mount directories
+  script:
+    cmd: "{{ role_path }}/files/get_docker_bind_mounts.py"
+    chdir: "{{ playbook_dir }}/../.."
+  register: bind_mount_dirs
+  changed_when: false
+  delegate_to: localhost
+  run_once: true
+  become: false
+
+- name: Ensure directories for docker-compose bind mounts exist
+  become: true
+  ansible.builtin.file:
+    path: "/srv/{{ item }}"
+    state: directory
+    owner: root
+    group: docker
+    mode: "0775"
+  loop: "{{ bind_mount_dirs.stdout_lines }}"
 
 - name: Run Docker Compose
   community.docker.docker_compose_v2:
-    project_src: "/srv/docker/{{ item }}"
+    project_src: "/srv/docker/{{ service }}"
     state: present
-    recreate: always
+  #    recreate: always
   loop: "{{ docker_services | unique }}"
+  loop_control:
+    loop_var: service

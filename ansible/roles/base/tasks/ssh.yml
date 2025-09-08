@@ -1,0 +1,74 @@
+---
+- name: Ensure .ssh directory exists
+  ansible.builtin.file:
+    path: /home/{{ username }}/.ssh
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: "0700"
+
+- name: Check if SSH private key already exists
+  ansible.builtin.stat:
+    path: /home/{{ username }}/.ssh/id_ed25519
+  register: ssh_key_stat
+
+- name: Generate SSH key pair if it does not exist
+  community.crypto.openssh_keypair:
+    path: /home/{{ username }}/.ssh/id_ed25519
+    type: ed25519
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: "0600"
+  when: not ssh_key_stat.stat.exists
+
+- name: Remove authorized_keys for root
+  ansible.builtin.file:
+    path: /root/.ssh/authorized_keys
+    state: absent
+
+- name: Back up the original sshd_config
+  ansible.builtin.copy:
+    src: /etc/ssh/sshd_config
+    dest: /etc/ssh/sshd_config.bak
+    remote_src: true
+  changed_when: false
+
+- name: Perform SSH configuration changes
+  block:
+    - name: Disable root login
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: ^\s*#?\s*PermitRootLogin
+        line: PermitRootLogin no
+
+    - name: Disable SSH password authentication
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: ^\s*#?\s*PasswordAuthentication
+        line: PasswordAuthentication no
+
+    - name: Validate SSH server configuration
+      ansible.builtin.command:
+        cmd: sshd -t
+      register: sshd_config_validation
+      changed_when: false
+      notify: Restart ssh
+
+  rescue:
+    - name: Display validation errors
+      ansible.builtin.debug:
+        msg: "{{ sshd_config_validation.stdout }}"
+      when: sshd_config_validation.rc != 0
+
+    - name: Restore original sshd_config
+      ansible.builtin.copy:
+        src: /etc/ssh/sshd_config.bak
+        dest: /etc/ssh/sshd_config
+        remote_src: true
+
+  always:
+    - name: Remove sshd_config.bak file
+      ansible.builtin.file:
+        path: /etc/ssh/sshd_config.bak
+        state: absent
+      changed_when: false

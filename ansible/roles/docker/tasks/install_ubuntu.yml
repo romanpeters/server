@@ -2,11 +2,13 @@
 - name: Remove conflicting Docker repository files
   become: true
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ repo_file }}"
     state: absent
-  with_items:
+  loop:
     - /etc/apt/sources.list.d/download_docker_com_linux_ubuntu.list
     - /etc/apt/sources.list.d/docker.list.distUpgrade
+  loop_control:
+    loop_var: repo_file
 
 - name: Remove conflicting docker packages
   become: true

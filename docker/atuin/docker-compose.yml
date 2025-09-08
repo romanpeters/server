@@ -1,0 +1,28 @@
+---
+services:
+  atuin:
+    image: ghcr.io/atuinsh/atuin:18.8.0
+    container_name: atuin
+    command: server start
+    volumes:
+      - "./config:/config"
+    depends_on:
+      - db
+    ports:
+      - ${ATUIN_PORT}:8888
+    environment:
+      ATUIN_HOST: "0.0.0.0"
+      ATUIN_OPEN_REGISTRATION: "false"
+      ATUIN_DB_URI: postgres://atuin_db_user:$ATUIN_DB_PASSWORD@db/atuin_db
+      RUST_LOG: info,atuin_server=debug
+    restart: always
+  db:
+    image: postgres:14
+    container_name: atuin_db
+    restart: unless-stopped
+    volumes:
+      - "./database:/var/lib/postgresql/data/"
+    environment:
+      POSTGRES_USER: atuin_db_user
+      POSTGRES_PASSWORD: ${ATUIN_DB_PASSWORD}
+      POSTGRES_DB: atuin_db

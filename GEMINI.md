@@ -46,8 +46,8 @@ Use Fully Qualified Module Names (FQMN) for Ansible tasks.
 
 ## Restrictions
 You are not allowed to edit or remove these files:
-- data/hosts.yml
-- data/services.yml
+- hosts.yml
+- services.yml
 - terraform/terraform.tfstate
 Assume their content is correct. If a change is really needed, please ask.
 

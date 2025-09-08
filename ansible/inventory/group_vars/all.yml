@@ -1,3 +1,29 @@
 ---
 packages:
-  - vim
+  - neovim
+  - git
+  - gh
+  - acl
+  - tmux
+  - tree
+  - neofetch
+  - toilet
+  - cowsay
+  - sl
+  - ripgrep
+  - tldr
+  - trash-cli
+  - btop
+  - bat
+  - python3
+  - python3-pip
+  - zoxide
+
+vm_packages:
+  - qemu-guest-agent
+
+dev_packages: # unused
+  - ansible
+  - ansible-lint
+  - pre-commit
+  - ipcalc

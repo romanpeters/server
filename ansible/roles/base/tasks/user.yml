@@ -1,0 +1,15 @@
+---
+- name: Create user
+  ansible.builtin.user:
+    name: "{{ username }}"
+    state: present
+    createhome: true
+
+- name: Add passwordless sudo
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers.d/{{ username }}
+    state: present
+    create: true
+    mode: "0440"
+    line: "{{ username }} ALL=(ALL:ALL) NOPASSWD:ALL"
+    validate: /usr/sbin/visudo -cf %s

@@ -1,0 +1,13 @@
+---
+- name: Ensure .config directory exists
+  ansible.builtin.file:
+    path: /home/{{ username }}/.config
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: "0755"
+
+- name: Copy Git configuration
+  ansible.builtin.template:
+    src: gitconfig.j2
+    dest: "{{ ansible_env.HOME }}/.gitconfig"

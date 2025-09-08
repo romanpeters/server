@@ -11,6 +11,12 @@ automation:
   port: 443
   public: false
   ssl: true
+atuin:
+  docker: atuin
+  host: server
+  port: 8012
+  public: false
+  ssl: false
 bazarr:
   # local data
   alias: subs
