@@ -1,0 +1,9 @@
+---
+- name: Disable motd files
+  ansible.builtin.file:
+    path: /etc/update-motd.d/{{ item }}
+    mode: a-x
+  loop:
+    - "00-header"
+    - 10-help-text
+    - 50-motd-news

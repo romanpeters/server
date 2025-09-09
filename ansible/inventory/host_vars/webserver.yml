@@ -1,4 +1,6 @@
 ---
 # Roles to apply on 'webserver'
-roles_to_run:
+configure:
+  - base
+  - atuin
   - webserver

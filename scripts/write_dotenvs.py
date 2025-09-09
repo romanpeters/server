@@ -1,24 +1,45 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # dependencies = [
+#   "colorlog",
+#   "pyyaml",
 # ]
 # ///
 import os
-import csv
+import yaml
 import configparser
+import re
+import sys
+import logging
+import colorlog
+
+
+def setup_logger():
+    """Set up a colored logger."""
+    handler = colorlog.StreamHandler()
+    handler.setFormatter(
+        colorlog.ColoredFormatter("%(log_color)s%(levelname)s: %(message)s")
+    )
+
+    logger = colorlog.getLogger("write_dotenvs")
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+    return logger
 
 
 def main():
     """
-    Generates .env files for docker-compose files based on services.csv.
-    Correctly handles multiple services, including those with the same container value
-    but different compose files, by grouping based on the compose file path.
+    Generates .env files for docker-compose files.
+    It gets port variables from data/services.yml.
+    It auto-detects other required environment variables from the docker-compose files.
     """
+    logger = setup_logger()
+
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(script_dir)
 
-    vars_ini_path = os.path.join(project_root, "data", "vars.ini")
-    services_csv_path = os.path.join(project_root, "data", "services.csv")
+    vars_ini_path = os.path.join(project_root, "vars.ini")
+    services_yml_path = os.path.join(project_root, "services.yml")
     docker_dir = os.path.join(project_root, "docker")
 
     # Read domain_name from vars.ini
@@ -26,54 +47,105 @@ def main():
     config.read(vars_ini_path)
     domain_name = config.get("DEFAULT", "domain_name")
 
-    # Maps a specific docker-compose.yml path to a list of its env var strings
-    compose_env_map = {}
+    # Find all docker-compose.yml files
+    all_compose_files = set()
+    for root, _, files in os.walk(docker_dir):
+        for file in files:
+            if file == "docker-compose.yml":
+                all_compose_files.add(os.path.join(root, file))
 
-    with open(services_csv_path, "r") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            if not row.get("container"):
+    # Get port variables from services.yml
+    port_vars_map = {}  # Maps compose_path to a list of port variable strings
+    port_var_names = set()
+    if os.path.exists(services_yml_path):
+        with open(services_yml_path, "r") as f:
+            services_data = yaml.safe_load(f)
+            for service_name, service_details in services_data.items():
+                docker_dir_name = service_details.get("docker")
+                if not docker_dir_name:
+                    continue
+
+                compose_path = os.path.join(
+                    docker_dir, docker_dir_name, "docker-compose.yml"
+                )
+                if compose_path not in port_vars_map:
+                    port_vars_map[compose_path] = []
+
+                port_var_name = f"{service_name.upper().replace('-', '_')}_PORT"
+                port_var_names.add(port_var_name)
+                port = service_details.get("port")
+                if port:
+                    port_vars_map[compose_path].append(f"{port_var_name}={port}")
+
+    # Process each compose file
+    for compose_path in all_compose_files:
+        env_vars = []
+
+        # Add port variables if any are defined for this file
+        if compose_path in port_vars_map:
+            env_vars.extend(port_vars_map[compose_path])
+
+        # Read compose file and find other required env vars
+        with open(compose_path, "r") as f:
+            content = f.read()
+
+        regex = re.compile(r"\$\{([A-Z0-9_]+)\}")
+        found_vars = set(regex.findall(content))
+
+        for var_name in found_vars:
+            # Skip variables that are handled by other means
+            if var_name in port_var_names or var_name == "DOMAIN_NAME":
                 continue
 
-            container = row["container"]
-            name = row["name"]
-            port = row["port"]
-
-            # Determine the correct path for the docker-compose.yml
-            path_single = os.path.join(
-                docker_dir, container, name, "docker-compose.yml"
-            )
-            path_group = os.path.join(docker_dir, container, "docker-compose.yml")
-
-            compose_path = None
-            path_single_exists = os.path.exists(path_single)
-            path_group_exists = os.path.exists(path_group)
-
-            if path_single_exists:
-                compose_path = path_single
-            elif path_group_exists:
-                compose_path = path_group
-            else:
-                # This service doesn't seem to have a compose file, skip it.
+            # Skip if already added (e.g. from port_vars_map)
+            if any(v.startswith(f"{var_name}=") for v in env_vars):
                 continue
 
-            # Initialize the list of env vars for this compose file if it's new
-            if compose_path not in compose_env_map:
-                compose_env_map[compose_path] = []
+            value = os.environ.get(var_name)
+            if value is None:
+                if var_name.endswith("_PORT"):
+                    logger.warning(
+                        f"Port variable '{var_name}' is used in "
+                        f"{os.path.relpath(compose_path, project_root)} but is not defined in "
+                        f"services.yml or the environment."
+                    )
+                    continue
+                else:
+                    logger.error(
+                        f"Environment variable '{var_name}' is used in "
+                        f"{os.path.relpath(compose_path, project_root)} but is not set."
+                    )
+                    sys.exit(1)
 
-            # Add the service's port variable
-            compose_env_map[compose_path].append(f"{name.upper()}_PORT={port}")
+            env_vars.append(f"{var_name}={value}")
 
-    # Now, write the consolidated .env files
-    for compose_path, env_vars in compose_env_map.items():
+        # Separate into port and secret variables for ordering
+        port_vars_for_file = [v for v in env_vars if v.split("=")[0] in port_var_names]
+        secret_vars_for_file = [
+            v for v in env_vars if v.split("=")[0] not in port_var_names
+        ]
+
+        # Write the .env file for this compose file, only if there are vars other than DOMAIN_NAME
+        if not port_vars_for_file and not secret_vars_for_file:
+            # If a .env file exists, remove it
+            env_file_path = os.path.join(os.path.dirname(compose_path), ".env")
+            if os.path.exists(env_file_path):
+                os.remove(env_file_path)
+                print(
+                    f"Removed empty .env file from {os.path.relpath(env_file_path, project_root)}"
+                )
+            continue
+
         compose_dir = os.path.dirname(compose_path)
-
-        # Prepend the common variables
         full_env_content = [
-            "# This file is auto-generated. Do not edit.",
+            "# This file is auto-generated",
             f"DOMAIN_NAME={domain_name}",
         ]
-        full_env_content.extend(env_vars)
+        full_env_content.extend(sorted(port_vars_for_file))
+
+        if secret_vars_for_file:
+            full_env_content.append("")  # Add a blank line for separation
+            full_env_content.extend(sorted(secret_vars_for_file))
 
         env_content_str = "\n".join(full_env_content) + "\n"
 

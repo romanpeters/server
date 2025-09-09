@@ -1,8 +1,8 @@
 ---
-- name: Read sites from CSV
-  community.general.read_csv:
-    path: "{{ (playbook_dir + '/../../data/services.csv') | realpath }}"
-  register: sites_csv
+- name: Read sites from services.yml
+  ansible.builtin.include_vars:
+    file: "{{ playbook_dir }}/../../services.yml"
+    name: services_data
   delegate_to: localhost
   run_once: true
   become: false
@@ -10,14 +10,15 @@
 - name: Create site configurations
   ansible.builtin.template:
     src: site.j2
-    dest: "/etc/nginx/sites-available/{{ item.name }}.{{ domain_name }}"
-  loop: "{{ sites_csv.list }}"
+    dest: "/etc/nginx/sites-available/{{ item.key }}.{{ domain_name }}"
+  with_dict: "{{ services_data }}"
+  when: item.value.port is defined and item.value.port != ''
   notify: Restart nginx
 
-# - name: Remove all files in sites-enabled
-#   ansible.builtin.file:
-#     path: /etc/nginx/sites-enabled/
-#     state: absent
+- name: Remove all files in sites-enabled
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/
+    state: absent
 
 - name: Recreate sites-enabled directory
   ansible.builtin.file:
@@ -27,8 +28,9 @@
 
 - name: Enable sites
   ansible.builtin.file:
-    src: "/etc/nginx/sites-available/{{ item.name }}.{{ domain_name }}"
-    dest: "/etc/nginx/sites-enabled/{{ item.name }}.{{ domain_name }}"
+    src: "/etc/nginx/sites-available/{{ item.key }}.{{ domain_name }}"
+    dest: "/etc/nginx/sites-enabled/{{ item.key }}.{{ domain_name }}"
     state: link
-  loop: "{{ sites_csv.list }}"
+  with_dict: "{{ services_data }}"
+  when: item.value.port is defined and item.value.port != ''
   notify: Restart nginx

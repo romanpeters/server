@@ -5,13 +5,19 @@ venv/
 .ansible/
 
 # Infra config
-data/hosts.csv
-data/services.csv
+hosts.yml
+services.yml
+vars.ini
 
 # Generated files
 ansible/vars/main.yml
 nixos/vars.nix
 terraform/vars.tfvars
+packer/vars.pkrvars.hcl
+**/.env
+
+# Packer
+packer/vm_ubuntu/downloaded_iso_path
 
 # Terraform
 *.tfstate

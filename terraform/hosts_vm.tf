@@ -66,12 +66,12 @@ resource "proxmox_virtual_environment_vm" "server" {
     disconnected = false
     enabled      = true
     firewall     = false
-    mac_address  = local.hosts_map["server"].mac
+    mac_address  = local.hosts["server"].mac
     model        = "virtio"
     mtu          = 0
     queues       = 0
     rate_limit   = 0
-    vlan_id      = local.hosts_map["server"].vlan
+    vlan_id      = local.hosts["server"].vlan
   }
 
   vga {
@@ -148,12 +148,12 @@ resource "proxmox_virtual_environment_vm" "homeassistant" {
     disconnected = false
     enabled      = true
     firewall     = false
-    mac_address  = local.hosts_map["home-assistant"].mac
+    mac_address  = local.hosts["home-assistant"].mac
     model        = "virtio"
     mtu          = 0
     queues       = 0
     rate_limit   = 0
-    vlan_id      = local.hosts_map["home-assistant"].vlan
+    vlan_id      = local.hosts["home-assistant"].vlan
   }
 
   lifecycle {
@@ -225,12 +225,12 @@ resource "proxmox_virtual_environment_vm" "ansible" {
     disconnected = false
     enabled      = true
     firewall     = false
-    mac_address  = local.hosts_map["ansible"].mac
+    mac_address  = local.hosts["ansible"].mac
     model        = "virtio"
     mtu          = 0
     queues       = 0
     rate_limit   = 0
-    vlan_id      = local.hosts_map["ansible"].vlan
+    vlan_id      = local.hosts["ansible"].vlan
   }
 
   lifecycle {

@@ -3,11 +3,30 @@
 # dependencies = [
 # ]
 # ///
+import argparse
 from configparser import ConfigParser
 from pathlib import Path
 from typing import Dict
 import sys
 import subprocess
+
+
+import json
+
+
+def get_terraform_output(variable: str) -> str:
+    try:
+        result = subprocess.run(
+            ["terraform", "output", "-json"],
+            capture_output=True,
+            text=True,
+            check=True,
+            cwd="terraform",
+        )
+        outputs = json.loads(result.stdout)
+        return outputs.get(variable, {}).get("value", "")
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return ""
 
 
 def merge_sections(
@@ -43,6 +62,8 @@ def format_variable(key: str, value: str, format_type: str) -> str:
         return f"{key}: {val}"
     elif format_type == "nixos":
         return f"  {key} = {val};"
+    elif format_type == "pkrvars":
+        return f"{key} = {val}"
     else:
         raise ValueError(f"Unknown format type: {format_type}")
 
@@ -56,9 +77,9 @@ def write_vars(vars_dict: Dict[str, str], filepath: str, format_type: str) -> No
         sys.exit(1)
 
     lines = []
-    lines.append("### This file is generated from data/vars.ini")
+    lines.append("### This file is generated from vars.ini")
     if format_type == "nixos":
-        lines.append("{")
+        lines.append("{ ")
     for k, v in vars_dict.items():
         lines.append(format_variable(k, v, format_type))
     if format_type == "nixos":
@@ -68,21 +89,40 @@ def write_vars(vars_dict: Dict[str, str], filepath: str, format_type: str) -> No
 
 
 def main() -> None:
-    vars_ini_path = Path(__file__).parent.parent / "data/vars.ini"
+    parser = argparse.ArgumentParser(description="Generate variable files.")
+    parser.add_argument(
+        "--format",
+        choices=["terraform", "ansible", "nixos", "packer"],
+        help="Specify the format to generate variables for.",
+    )
+    args = parser.parse_args()
+
+    vars_ini_path = Path(__file__).parent.parent / "vars.ini"
     if not vars_ini_path.exists():
         print(f"Error: vars.ini not found at {vars_ini_path}", file=sys.stderr)
         sys.exit(1)
 
     default_section, sections = read_ini(vars_ini_path)
 
-    terraform_vars = merge_sections(default_section, sections.get("terraform", {}))
-    ansible_vars = merge_sections(default_section, sections.get("ansible", {}))
-    nix_vars = merge_sections(default_section, sections.get("nixos", {}))
+    if not args.format or args.format == "terraform":
+        terraform_vars = merge_sections(default_section, sections.get("terraform", {}))
+        write_vars(terraform_vars, "terraform/vars.tfvars", "tfvars")
+        subprocess.run(["terraform", "fmt", Path("terraform/vars.tfvars")], check=True)
 
-    write_vars(terraform_vars, "terraform/vars.tfvars", "tfvars")
-    subprocess.run(["terraform", "fmt", Path("terraform/vars.tfvars")], check=True)
-    write_vars(ansible_vars, "ansible/vars/main.yml", "ansible")
-    write_vars(nix_vars, "nixos/vars.nix", "nixos")
+    if not args.format or args.format == "ansible":
+        ansible_vars = merge_sections(default_section, sections.get("ansible", {}))
+        tailscale_authkey = get_terraform_output("tailscale_authkey")
+        if tailscale_authkey:
+            ansible_vars["tailscale_authkey"] = tailscale_authkey
+        write_vars(ansible_vars, "ansible/vars/main.yml", "ansible")
+
+    if not args.format or args.format == "nixos":
+        nix_vars = merge_sections(default_section, sections.get("nixos", {}))
+        write_vars(nix_vars, "nixos/vars.nix", "nixos")
+
+    if not args.format or args.format == "packer":
+        packer_vars = merge_sections(default_section, sections.get("packer", {}))
+        write_vars(packer_vars, "packer/vars.pkrvars.hcl", "pkrvars")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,4 @@
+---
+# Roles to apply on 'rtv'
+configure:
+  - docker

@@ -1,4 +1,9 @@
 ---
 # Roles to apply on 'server'
-roles_to_run:
+configure:
+  - base
   - topgrade
+  - base
+  - docker
+  - tailscale
+  - atuin

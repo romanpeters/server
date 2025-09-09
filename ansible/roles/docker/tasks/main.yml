@@ -1,0 +1,10 @@
+---
+- name: Install Docker
+  ansible.builtin.include_tasks: install_ubuntu.yml
+  when:
+    - "'docker' in configure"
+    - "'ubuntu' in group_names"
+
+- name: Deploy Docker containers
+  ansible.builtin.include_tasks: deploy.yml
+  when: "'docker' in configure"

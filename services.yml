@@ -1,0 +1,167 @@
+api-printer:
+  docker: false
+  host: mac-mini
+  port: 8000
+  ssl: false
+automation:
+  # server
+  alias: ansible
+  docker: false
+  host: ansible
+  port: 443
+  public: false
+  ssl: true
+atuin:
+  docker: atuin
+  host: server
+  port: 8012
+  public: false
+  ssl: false
+bazarr:
+  # local data
+  alias: subs
+  docker: arr
+  host: server
+  port: 6767
+  public: false
+  ssl: false
+books:
+  alias: audiobooks
+  docker: audiobookshelf
+  host: production
+  port: 8015
+  public: true
+  ssl: false
+ebooks:
+  alias: library
+  docker: calibre-web
+  host: production
+  port: 8014
+  public: true
+  ssl: false
+hello:
+  # local data
+  alias: www
+  docker: heimdall_hello
+  host: production
+  port: 8006
+  public: true
+  ssl: false
+home:
+  # server
+  alias: home-assistant
+  docker: false
+  host: home-assistant
+  port: 8123
+  public: false
+  ssl: false
+isponsorblocktv:
+  # portable
+  docker: isponsorblocktv
+  host: server
+ollama:
+  # mac mini
+  alias: ai
+  docker: false
+  host: mac-mini
+  port: 11434
+  public: false
+  ssl: false
+n8n:
+  # local data
+  docker: n8n
+  host: server
+  port: 8011
+  public: false
+  ssl: false
+prowlarr:
+  # local data
+  docker: downloads
+  host: server
+  port: 9696
+  public: false
+  ssl: false
+proxmox:
+  # server
+  alias: prox
+  docker: false
+  host: proxmox
+  port: 8006
+  public: false
+  ssl: true
+radarr:
+  # local data
+  alias: movies
+  docker: arr
+  host: server
+  port: 7878
+  public: false
+  ssl: false
+readarr:
+  # local data
+  docker: arr
+  host: server
+  port: 8787
+  public: false
+  ssl: false
+readarr-audio:
+  # local data
+  docker: arr
+  host: server
+  port: 8686
+  public: false
+  ssl: false
+request:
+  # local data
+  alias: overseerr
+  docker: overseerr
+  host: rtv
+  port: 8010
+  public: true
+  ssl: false
+rtv:
+  # local data
+  alias: tv
+  docker: heimdall_rtv
+  host: rtv
+  port: 8008
+  public: true
+  ssl: false
+sonarr:
+  # local data
+  alias: series
+  docker: arr
+  host: server
+  port: 8989
+  public: false
+  ssl: false
+tautulli:
+  docker: tautulli
+  host: rtv
+  port: 8009
+  public: false
+  ssl: false
+transmission:
+  # portable
+  alias: downloads
+  docker: downloads
+  host: server
+  port: 9091
+  public: false
+  ssl: false
+unas:
+  # server
+  alias: nas
+  docker: false
+  host: unas
+  port: 443
+  public: false
+  ssl: true
+unifi:
+  # server
+  alias: ui
+  docker: false
+  host: unifi
+  port: 443
+  public: false
+  ssl: true

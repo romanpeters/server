@@ -1,0 +1,16 @@
+---
+services:
+  n8n:
+    container_name: n8n
+    build:
+      context: .
+    ports:
+      - "${N8N_PORT}:5678"
+    environment:
+      - GENERIC_TIMEZONE=Europe/Amsterdam
+    volumes:
+      - data:/home/node/.n8n
+    restart: unless-stopped
+
+volumes:
+  data:

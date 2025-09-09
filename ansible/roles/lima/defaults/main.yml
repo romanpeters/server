@@ -1,3 +1,0 @@
----
-# Default variables for Lima role
-lima_bridge_interface: en0

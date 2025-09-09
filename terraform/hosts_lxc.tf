@@ -45,11 +45,11 @@ resource "proxmox_virtual_environment_container" "production" {
     bridge      = "vmbr0"
     enabled     = true
     firewall    = false
-    mac_address = local.hosts_map["production"].mac
+    mac_address = local.hosts["production"].mac
     mtu         = 0
     name        = "eth0"
     rate_limit  = 0
-    vlan_id     = local.hosts_map["production"].vlan
+    vlan_id     = local.hosts["production"].vlan
   }
 
   operating_system {
@@ -60,65 +60,4 @@ resource "proxmox_virtual_environment_container" "production" {
   features {
     nesting = true
   }
-}
-
-resource "proxmox_virtual_environment_container" "adguard" {
-  vm_id      = "301"
-  node_name  = "proxmox"
-  protection = false
-  started    = true
-  tags = [
-    "terraform",
-  ]
-  template     = false
-  unprivileged = true
-
-  cpu {
-    architecture = "amd64"
-    cores        = 2
-    units        = 1024
-  }
-
-  disk {
-    datastore_id = "local-zfs"
-    size         = 8
-  }
-
-  initialization {
-    hostname = "adguard"
-
-    dns {
-      servers = [
-        "10.10.10.1",
-      ]
-    }
-
-    ip_config {
-      ipv4 {
-        address = "dhcp"
-      }
-    }
-  }
-
-  memory {
-    dedicated = 1024
-    swap      = 512
-  }
-
-  network_interface {
-    bridge      = "vmbr0"
-    enabled     = true
-    firewall    = false
-    mac_address = local.hosts_map["adguard"].mac
-    mtu         = 0
-    name        = "eth0"
-    rate_limit  = 0
-    vlan_id     = local.hosts_map["adguard"].vlan
-  }
-
-  operating_system {
-    type             = "nixos"
-    template_file_id = "nas:vztmpl/nixos-system-x86_64-linux.tar.xz"
-  }
-
 }

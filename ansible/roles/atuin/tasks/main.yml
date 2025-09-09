@@ -1,0 +1,47 @@
+---
+- name: Install Atuin
+  ansible.builtin.shell:
+    cmd: bash -c "curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh"
+    creates: /home/{{ username }}/.atuin/bin/atuin
+  become: true
+  become_user: "{{ username }}"
+
+- name: Run Atuin info
+  ansible.builtin.shell:
+    cmd: /home/{{ username }}/.atuin/bin/atuin info
+
+- name: Configure Atuin server address
+  ansible.builtin.lineinfile:
+    path: "/home/{{ username }}/.config/atuin/config.toml"
+    regexp: "^# sync_address = "
+    line: 'sync_address = "https://atuin.{{ domain_name }}"'
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+- name: Check if Atuin server is running
+  ansible.builtin.uri:
+    url: "https://atuin.{{ domain_name }}"
+    method: GET
+  register: atuin_server_status
+  ignore_errors: true
+
+- name: Login to Atuin
+  ansible.builtin.shell:
+    cmd: "/home/{{ username }}/.atuin/bin/atuin login -u {{ username }} -p {{ lookup('env', 'ATUIN_PASSWORD') }}"
+  become: true
+  become_user: "{{ username }}"
+  when: atuin_server_status.status == 200
+
+- name: Import shell history
+  ansible.builtin.shell:
+    cmd: "/home/{{ username }}/.atuin/bin/atuin import auto"
+  become: true
+  become_user: "{{ username }}"
+  when: atuin_server_status.status == 200
+
+- name: Sync Atuin history
+  ansible.builtin.shell:
+    cmd: "/home/{{ username }}/.atuin/bin/atuin sync"
+  become: true
+  become_user: "{{ username }}"
+  when: atuin_server_status.status == 200
