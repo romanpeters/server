@@ -62,6 +62,8 @@ def format_variable(key: str, value: str, format_type: str) -> str:
         return f"{key}: {val}"
     elif format_type == "nixos":
         return f"  {key} = {val};"
+    elif format_type == "pkrvars":
+        return f"{key} = {val}"
     else:
         raise ValueError(f"Unknown format type: {format_type}")
 
@@ -77,7 +79,7 @@ def write_vars(vars_dict: Dict[str, str], filepath: str, format_type: str) -> No
     lines = []
     lines.append("### This file is generated from vars.ini")
     if format_type == "nixos":
-        lines.append("{")
+        lines.append("{ ")
     for k, v in vars_dict.items():
         lines.append(format_variable(k, v, format_type))
     if format_type == "nixos":
@@ -90,7 +92,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Generate variable files.")
     parser.add_argument(
         "--format",
-        choices=["terraform", "ansible", "nixos"],
+        choices=["terraform", "ansible", "nixos", "packer"],
         help="Specify the format to generate variables for.",
     )
     args = parser.parse_args()
@@ -117,6 +119,10 @@ def main() -> None:
     if not args.format or args.format == "nixos":
         nix_vars = merge_sections(default_section, sections.get("nixos", {}))
         write_vars(nix_vars, "nixos/vars.nix", "nixos")
+
+    if not args.format or args.format == "packer":
+        packer_vars = merge_sections(default_section, sections.get("packer", {}))
+        write_vars(packer_vars, "packer/vars.pkrvars.hcl", "pkrvars")
 
 
 if __name__ == "__main__":

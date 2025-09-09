@@ -16,7 +16,7 @@ LIMIT ?=
 LIMIT_CMD = $(if $(LIMIT),--limit $(LIMIT),$(LIMIT_FOR_ROLE))
 
 # Phony targets
-.PHONY: help lint vars clean-dotenvs terraform ansible webserver nixos status check docker \
+.PHONY: help lint vars clean-dotenvs terraform ansible webserver nixos packer status check docker \
 	check/ansible check/terraform status/dns status/http status/hosts inventory
 
 help:
@@ -29,6 +29,7 @@ help:
 	@echo "  terraform        Apply Terraform changes"
 	@echo "  webserver        Run the webserver playbook"
 	@echo "  nixos            Run the nixos_deploy playbook"
+	@echo "  packer           Build packer templates"
 	@echo "  check            Run all tests"
 	@echo "  status           Check the status of the project"
 	@echo "  inventory        Show the ansible inventory"
@@ -39,7 +40,7 @@ pre-commit: vars ## Lint the project
 	# Run pre-commit twice to format and then lint
 	@pre-commit run --all-files || pre-commit run --all-files
 
-vars: vars-terraform vars-ansible vars-nixos vars-dotenvs ## Generate variable files
+vars: vars-terraform vars-ansible vars-nixos vars-dotenvs vars-packer ## Generate variable files
 
 vars-terraform:
 	@echo "Generating Terraform variables..."
@@ -57,16 +58,21 @@ vars-dotenvs:
 	@echo "Generating .env files..."
 	@. .envrc && scripts/write_dotenvs.py
 
+vars-packer:
+	@echo "Generating Packer variables..."
+	@. .envrc && scripts/write_vars.py --format packer
+
 clean-dotenvs: ## Remove generated .env files
 	@echo "Cleaning up .env files..."
 	@find docker -name ".env" -type f -delete
 
 
 
+
 terraform: terraform/apply ## Apply Terraform changes
 
 terraform/plan: vars-terraform ## Plan Terraform changes
-	t@echo "Planning Terraform changes..."
+	@echo "Planning Terraform changes..."
 	@. .envrc && \
 	 cd terraform && \
 	 terraform init && \
@@ -97,12 +103,21 @@ webserver: vars-ansible ## Run the webserver playbook
 	$(MAKE) status/http
 
 nixos: vars-nixos ## Run the nixos_deploy playbook
-	@echo "Running the nixos_deploy playbook..."; \
+	@echo "Running the nixos_playbook..."; \
 	trap '$(MAKE) clean-dotenvs' EXIT; \
 	. .envrc && \
 	(cd ansible && ansible-playbook playbooks/deploy_nixos.yml -e @vars/main.yml $(LIMIT_CMD))
 
+packer: vars-packer ## Build packer templates
+	@echo "Building packer VM template..."; \
+	. .envrc && \
+	(cd packer/vm_ubuntu && packer init . && packer build -var-file=../vars.pkrvars.hcl .)
+
+
+
 docker: vars-ansible vars-dotenvs ## Run the docker playbook
+
+
 	@echo "Running the docker playbook..."; \
 	trap '$(MAKE) clean-dotenvs' EXIT; \
 	. .envrc && \

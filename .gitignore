@@ -13,7 +13,11 @@ vars.ini
 ansible/vars/main.yml
 nixos/vars.nix
 terraform/vars.tfvars
+packer/vars.pkrvars.hcl
 **/.env
+
+# Packer
+packer/vm_ubuntu/downloaded_iso_path
 
 # Terraform
 *.tfstate
