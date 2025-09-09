@@ -111,7 +111,9 @@ nixos: vars-nixos ## Run the nixos_deploy playbook
 packer: vars-packer ## Build packer templates
 	@echo "Building packer VM template..."; \
 	. .envrc && \
-	(cd packer/vm_ubuntu && packer init . && packer build -var-file=../vars.pkrvars.hcl .)
+	./scripts/delete_packer_vm.py && \
+	(cd packer/ubuntu && packer init . && packer build -var-file=../vars.pkrvars.hcl .)
+
 
 
 

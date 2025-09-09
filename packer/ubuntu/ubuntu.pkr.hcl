@@ -26,9 +26,10 @@ source "proxmox-iso" "ubuntu-server-noble-numbat" {
 
     # VM General Settings
     node = var.proxmox_node
-    vm_id = "999"
+    vm_id = "500"
     vm_name = "ubuntu"
-    template_description = "PKR: Noble Numbat"
+    template_name        = "ubuntu"
+    template_description = "Ubuntu 24.04 Noble Numbat, made by Packer"
 
     # VM OS Settings
     boot_iso {
@@ -41,8 +42,6 @@ source "proxmox-iso" "ubuntu-server-noble-numbat" {
       iso_checksum = "sha512:888940b5b7e76c6312f77b9228b49ab328aee9f56426ffdcce59a57e8d18553067b9fe5482ff7abc31768d23d091c8e1edd992f2b993d4d80f47afe8213ace80"
       iso_storage_pool = var.proxmox_iso_storage_pool
     }
-
-    template_name        = "ubuntu2404"
 
     # VM System Settings
     qemu_agent = true
@@ -92,6 +91,7 @@ source "proxmox-iso" "ubuntu-server-noble-numbat" {
       "/user-data" = templatefile("${path.root}/http/user-data.tpl", {
       username     = var.username
       ssh_key      = var.ssh_key
+      ssh_password_hashed = var.ssh_password_hashed
     })
       "/meta-data" = file("${path.root}/http/meta-data")
   }

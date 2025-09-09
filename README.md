@@ -8,6 +8,7 @@ This repository contains the infrastructure as code for managing my personal ser
 - **Ansible:** For configuring the server, deploying applications, and managing services.
 - **Docker:** For running containerized applications.
 - **NixOS:** As the operating system for some hosts, with declarative configuration.
+- **Packer:** For creating custom VM images.
 - **pre-commit:** For code linting and formatting to maintain code quality.
 - **Jenkins:** For continuous integration and automated deployments.
 
@@ -21,6 +22,7 @@ This repository contains the infrastructure as code for managing my personal ser
 - **Docker:** For running containerized applications and testing.
 - **Ansible:** For configuration management.
 - **Terraform:** For infrastructure provisioning.
+- **Packer:** For building VM images.
 - **(Optional) Nix & nix-shell:** For isolated development environments.
 
 ### Installation
@@ -33,7 +35,7 @@ This repository contains the infrastructure as code for managing my personal ser
 
 2. **Install Python dependencies:**
    ```bash
-   pip install --user -r requirements.txt
+   pip install --user -e .
    ```
 
 3. **Set up pre-commit hooks:**
@@ -73,8 +75,18 @@ If you prefer to run the tools manually, here are the equivalent commands:
 - **Ansible:**
   ```bash
   cd ansible
-  ansible-playbook -i inventory/hosts_csv.py playbooks/webserver.yml
+  ansible-playbook -i inventory/hosts_yml.py playbooks/webserver.yml
   ```
+
+## Packer
+
+This project uses [Packer](https://www.packer.io/) to create a reusable Ubuntu VM image for Proxmox. The configuration is located in the `packer/vm_ubuntu` directory.
+
+To build the image, run the following command:
+
+```bash
+make packer
+```
 
 ## Continuous Integration
 

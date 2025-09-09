@@ -2,7 +2,6 @@
 packages:
   - neovim
   - git
-  - gh
   - acl
   - tmux
   - tree
@@ -25,5 +24,6 @@ vm_packages:
 dev_packages: # unused
   - ansible
   - ansible-lint
+  - gh
   - pre-commit
   - ipcalc
