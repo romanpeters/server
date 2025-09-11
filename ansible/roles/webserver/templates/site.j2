@@ -17,7 +17,7 @@ server {
         proxy_ssl_verify off;
 {% endif %}
 {% if lookup('file', 'files/custom_sites/{{ item.key }}.{{ domain_name }}', errors='ignore') %}
-        {{ lookup('file', 'files/custom_sites/{{ item.key }}.{{ domain_name }}') }}
+        {{ lookup('file', 'files/custom_location/{{ item.key }}.{{ domain_name }}') }}
 {% else %}
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
