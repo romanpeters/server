@@ -17,7 +17,7 @@ packer/vars.pkrvars.hcl
 **/.env
 
 # Packer
-packer/vm_ubuntu/downloaded_iso_path
+packer/ubuntu/downloaded_iso_path
 
 # Terraform
 *.tfstate

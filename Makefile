@@ -16,13 +16,14 @@ LIMIT ?=
 LIMIT_CMD = $(if $(LIMIT),--limit $(LIMIT),$(LIMIT_FOR_ROLE))
 
 # Phony targets
-.PHONY: help lint vars clean-dotenvs terraform ansible webserver nixos packer status check docker \
+.PHONY: help all lint vars clean-dotenvs terraform ansible webserver nixos packer status check docker \
 	check/ansible check/terraform status/dns status/http status/hosts inventory
 
 help:
 	@echo "Usage: make [target] [LIMIT=host] [ROLE=role]"
 	@echo ""
 	@echo "Targets:"
+	@echo "  all              Run packer and terraform"
 	@echo "  pre-commit       Lint the project"
 	@echo "  vars             Generate variable files"
 	@echo "  clean-dotenvs    Remove generated .env files"
@@ -33,6 +34,9 @@ help:
 	@echo "  check            Run all tests"
 	@echo "  status           Check the status of the project"
 	@echo "  inventory        Show the ansible inventory"
+
+all: packer terraform ## Run packer and terraform
+
 
 
 pre-commit: vars ## Lint the project
@@ -111,7 +115,9 @@ nixos: vars-nixos ## Run the nixos_deploy playbook
 packer: vars-packer ## Build packer templates
 	@echo "Building packer VM template..."; \
 	. .envrc && \
-	(cd packer/vm_ubuntu && packer init . && packer build -var-file=../vars.pkrvars.hcl .)
+	./scripts/delete_packer_vm.py && \
+	(cd packer/ubuntu && packer init . && packer build -var-file=../vars.pkrvars.hcl .)
+
 
 
 

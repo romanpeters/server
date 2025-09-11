@@ -22,9 +22,13 @@ variable "username" {
   type    = string
 }
 
-variable "ssh_password" {
+variable "email" {
   type    = string
-  default = env("PKR_VAR_ssh_password")
+}
+
+variable "ssh_password_hashed" {
+  type    = string
+  default = env("PKR_VAR_ssh_password_hashed")
 }
 
 variable "ssh_key" {
