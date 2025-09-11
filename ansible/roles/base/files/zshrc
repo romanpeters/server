@@ -30,11 +30,17 @@ plugins=(
 source $ZSH/oh-my-zsh.sh
 
 # Custom functions
-eval "$(gh copilot alias -- zsh)"
-eval "$(zoxide init zsh)"
-. "$HOME/.atuin/bin/env"
-eval "$(atuin init zsh)"
-killport() { kill -9 $(lsof -t -i :$1 -sTCP:LISTEN) }
+if command -v gh >/dev/null 2>&1; then
+  eval "$(gh copilot alias -- zsh)"; fi
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init zsh)"; fi
+[[ -r "$HOME/.atuin/bin/env" ]] && . "$HOME/.atuin/bin/env"
+if command -v atuin >/dev/null 2>&1; then
+  eval "$(atuin init zsh)"; fi
+killport() {
+  local port="$1"
+  lsof -t -iTCP:"$port" -sTCP:LISTEN 2>/dev/null | xargs -r kill -9
+}
 
 # Load aliases
 if [ -f ~/.aliases ]; then
