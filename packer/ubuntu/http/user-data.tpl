@@ -4,6 +4,13 @@ autoinstall:
   locale: en_US
   keyboard:
     layout: us
+  network:
+    version: 2
+    ethernets:
+      id0:
+        match:
+          name: "en*"
+        dhcp4: true
   ssh:
     install-server: true
     allow-pw: false
@@ -20,6 +27,7 @@ autoinstall:
       name: direct
     swap:
       size: 0
+  # user-data is processed by cloud-init after the OS is installed
   user-data:
     package_upgrade: true
     timezone: Europe/Amsterdam
@@ -32,12 +40,3 @@ autoinstall:
         shell: /bin/zsh
         ssh_authorized_keys:
           - ${ssh_key}
-  ansible:
-    install_method: pip
-    pull:
-      - url: "https://github.com/romanpeters/server.git"
-        playbook_names: [ansible/roles/configure_hosts.yml]
-        extra_vars:
-	  role_to_run: base
-	  username: ${username}
-	  email: mail@romanpeters.nl

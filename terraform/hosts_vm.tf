@@ -1,8 +1,68 @@
+resource "proxmox_virtual_environment_vm" "server25" {
+  acpi          = true
+  description   = "Managed by Terraform."
+  name          = "server"
+  node_name     = "proxmox"
+  started       = true
+  scsi_hardware = "virtio-scsi-pci"
+  tags = [
+    "terraform",
+  ]
+  template = false
+  vm_id    = 210
+
+  clone {
+    vm_id = 500
+  }
+
+  agent {
+    enabled = true
+    timeout = "15m"
+    trim    = true
+  }
+
+  cpu {
+    cores   = 2
+    sockets = 4
+    type    = "host"
+  }
+
+
+  boot_order = ["scsi0"]
+
+  initialization {
+    datastore_id = "local-zfs"
+    user_account {
+      keys = [
+        var.ssh_key,
+      ]
+    }
+  }
+
+  memory {
+    dedicated = 8192
+  }
+
+  network_device {
+    bridge      = "vmbr0"
+    mac_address = local.hosts["server25"].mac
+    model       = "virtio"
+    vlan_id     = local.hosts["server25"].vlan
+  }
+
+  lifecycle {
+    ignore_changes = [
+      operating_system,
+      initialization,
+    ]
+  }
+}
+
 resource "proxmox_virtual_environment_vm" "server" {
   acpi          = true
   bios          = "seabios"
   description   = "Managed by Terraform."
-  name          = "server"
+  name          = "server-old"
   node_name     = "proxmox"
   protection    = true
   scsi_hardware = "virtio-scsi-pci"

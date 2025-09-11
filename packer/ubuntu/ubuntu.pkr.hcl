@@ -53,7 +53,7 @@ source "proxmox-iso" "ubuntu-server-noble-numbat" {
         disk_size = "32G"
         format = "raw"
         storage_pool = var.proxmox_storage_pool
-        type = "virtio"
+        type = "scsi"
     }
 
     # VM CPU Settings
@@ -67,6 +67,7 @@ source "proxmox-iso" "ubuntu-server-noble-numbat" {
         model = "virtio"
         bridge = var.proxmox_bridge
         firewall = "false"
+        vlan_tag = "20"
     }
 
     # VM Cloud-Init Settings
@@ -90,6 +91,7 @@ source "proxmox-iso" "ubuntu-server-noble-numbat" {
     http_content = {
       "/user-data" = templatefile("${path.root}/http/user-data.tpl", {
       username     = var.username
+      email        = var.email
       ssh_key      = var.ssh_key
       ssh_password_hashed = var.ssh_password_hashed
     })
@@ -118,29 +120,48 @@ build {
     name = "ubuntu-server-noble-numbat"
     sources = ["proxmox-iso.ubuntu-server-noble-numbat"]
 
-    # Provisioning the VM Template for Cloud-Init Integration in Proxmox #1
     provisioner "shell" {
-        inline = [
-            "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done",
-            "sudo rm /etc/ssh/ssh_host_*",
-            "sudo truncate -s 0 /etc/machine-id",
-            "sudo apt -y autoremove --purge",
-            "sudo apt -y clean",
-            "sudo apt -y autoclean",
-            "sudo cloud-init clean",
-            "sudo rm -f /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg",
-            "sudo rm -f /etc/netplan/00-installer-config.yaml",
-            "sudo sync"
-        ]
+      inline = [
+        "echo 'Waiting for cloud-init to finish before provisioning...'",
+        "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting...'; sleep 1; done",
+      ]
     }
 
-    # Provisioning the VM Template for Cloud-Init Integration in Proxmox #2
+    provisioner "shell" {
+      inline = [
+        "echo 'Installing dependencies: git and pip...'",
+        "sudo apt-get update",
+        "sudo apt-get install -y ansible git",
+
+        "echo 'Cloning Ansible repository...'",
+        "git clone https://github.com/romanpeters/server.git",
+
+        "echo 'Running the base Ansible playbook...'",
+        "cd server/ansible",
+        "ansible-playbook playbooks/packer_build.yml -e 'username=${var.username} email=${var.email}'"
+      ]
+    }
+
+    provisioner "shell" {
+      inline = [
+        "echo 'Cleaning up...'",
+        "sudo rm /etc/ssh/ssh_host_*",
+        "sudo truncate -s 0 /etc/machine-id",
+        "sudo apt -y autoremove --purge",
+        "sudo apt -y clean",
+        "sudo apt -y autoclean",
+        "sudo cloud-init clean",
+        "sudo rm -f /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg",
+        "sudo rm -f /etc/netplan/00-installer-config.yaml",
+        "sudo sync"
+      ]
+    }
+
     provisioner "file" {
         source = "files/99-pve.cfg"
         destination = "/tmp/99-pve.cfg"
     }
 
-    # Provisioning the VM Template for Cloud-Init Integration in Proxmox #3
     provisioner "shell" {
         inline = [ "sudo cp /tmp/99-pve.cfg /etc/cloud/cloud.cfg.d/99-pve.cfg" ]
     }
