@@ -27,8 +27,9 @@ variable "email" {
 }
 
 variable "ssh_password_hashed" {
+  # env PKR_VAR_ssh_password_hashed
   type    = string
-  default = env("PKR_VAR_ssh_password_hashed")
+  sensitive = true
 }
 
 variable "ssh_key" {

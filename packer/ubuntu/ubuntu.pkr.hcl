@@ -135,10 +135,13 @@ build {
 
         "echo 'Cloning Ansible repository...'",
         "git clone https://github.com/romanpeters/server.git",
+        "cd server/ansible",
+
+        "echo 'Creating Ansible inventory...'",
+        "printf 'ubuntu:\n  hosts:\n    localhost:\n      ansible_connection: local\n' > inventory/packer_inventory.yml",
 
         "echo 'Running the base Ansible playbook...'",
-        "cd server/ansible",
-        "ansible-playbook playbooks/packer_build.yml -e 'username=${var.username} email=${var.email}'"
+        "ansible-playbook playbooks/packer_build.yml -i inventory/packer_inventory.yml -e 'username=${var.username} email=${var.email}'"
       ]
     }
 

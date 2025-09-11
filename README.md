@@ -23,7 +23,6 @@ This repository contains the infrastructure as code for managing my personal ser
 - **Ansible:** For configuration management.
 - **Terraform:** For infrastructure provisioning.
 - **Packer:** For building VM images.
-- **(Optional) Nix & nix-shell:** For isolated development environments.
 
 ### Installation
 
@@ -80,7 +79,7 @@ If you prefer to run the tools manually, here are the equivalent commands:
 
 ## Packer
 
-This project uses [Packer](https://www.packer.io/) to create a reusable Ubuntu VM image for Proxmox. The configuration is located in the `packer/vm_ubuntu` directory.
+This project uses [Packer](https://www.packer.io/) to create a reusable Ubuntu VM image for Proxmox. The configuration is located in the `packer/ubuntu` directory.
 
 To build the image, run the following command:
 

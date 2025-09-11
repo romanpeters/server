@@ -27,10 +27,11 @@
 
 - name: Create zshrc file
   ansible.builtin.copy:
-    src: "{{ lookup('env', 'HOME') }}/.zshrc"
+    src: "zshrc"
     dest: /home/{{ username }}/.zshrc
     owner: "{{ username }}"
     group: "{{ username }}"
+    force: no
 
 - name: Create zshenv file
   ansible.builtin.copy:
