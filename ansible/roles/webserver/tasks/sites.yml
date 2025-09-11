@@ -34,3 +34,20 @@
   with_dict: "{{ services_data }}"
   when: item.value.port is defined and item.value.port != ''
   notify: Restart nginx
+
+- name: Place file sites
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/nginx/sites-available/{{ item | basename }}"
+  with_fileglob:
+    - "files/sites/*"
+  notify: Restart nginx
+
+- name: Enable file sites
+  ansible.builtin.file:
+    src: "/etc/nginx/sites-available/{{ item | basename }}"
+    dest: "/etc/nginx/sites-enabled/{{ item | basename }}"
+    state: link
+  with_fileglob:
+    - "files/sites/*"
+  notify: Restart nginx
