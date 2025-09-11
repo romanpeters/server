@@ -16,7 +16,7 @@ This repository contains the infrastructure as code for managing my personal ser
 
 ### Prerequisites
 
-- **make:** To simplify project workflows.
+- **Make:** To simplify project workflows.
 - **Git:** For version control.
 - **Python & pip:** For running scripts and tools.
 - **Docker:** For running containerized applications and testing.
