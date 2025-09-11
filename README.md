@@ -16,14 +16,13 @@ This repository contains the infrastructure as code for managing my personal ser
 
 ### Prerequisites
 
-- **make:** To simplify project workflows.
+- **Make:** To simplify project workflows.
 - **Git:** For version control.
 - **Python & pip:** For running scripts and tools.
 - **Docker:** For running containerized applications and testing.
 - **Ansible:** For configuration management.
 - **Terraform:** For infrastructure provisioning.
 - **Packer:** For building VM images.
-- **(Optional) Nix & nix-shell:** For isolated development environments.
 
 ### Installation
 
