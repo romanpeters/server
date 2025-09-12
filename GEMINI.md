@@ -6,8 +6,9 @@ This project combines Terraform, Ansible and nixOS to manage VM's and LXC's on P
 
 You can check the Makefile for actual commands, but the basic usage is:
 
-`make lint`         - run linters (pre-commit)
+`make pre-commit`   - run linters
 `make check`        - run syntax checks
+`make packer`       - run packer build
 `make terraform`    - run terraform apply
 `make ansible`      - run ansible for all hosts (slow)
 `make webserver`    - deploy webserver using ansible
@@ -19,6 +20,9 @@ You can check the Makefile for actual commands, but the basic usage is:
 Use these tools to verify any changes you have made.
 You are also free to use other commandline tools, such as curl, dig, nslookup, ssh, etc.
 
+## Git
+Run `make pre-commit` before commiting.
+Make sure not to accidentally commit any secrets.
 
 ## Files
 Data sources are stored in the `data/` directory.

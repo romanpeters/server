@@ -4,4 +4,3 @@ configure:
   - base
   - topgrade
   - docker
-  - atuin

@@ -67,7 +67,6 @@ source "proxmox-iso" "ubuntu-server-noble-numbat" {
         model = "virtio"
         bridge = var.proxmox_bridge
         firewall = "false"
-        vlan_tag = "20"
     }
 
     # VM Cloud-Init Settings
@@ -91,9 +90,8 @@ source "proxmox-iso" "ubuntu-server-noble-numbat" {
     http_content = {
       "/user-data" = templatefile("${path.root}/http/user-data.tpl", {
       username     = var.username
-      email        = var.email
-      ssh_key      = var.ssh_key
       ssh_password_hashed = var.ssh_password_hashed
+      ssh_key      = var.ssh_key
     })
       "/meta-data" = file("${path.root}/http/meta-data")
   }
@@ -124,29 +122,6 @@ build {
       inline = [
         "echo 'Waiting for cloud-init to finish before provisioning...'",
         "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting...'; sleep 1; done",
-      ]
-    }
-
-    provisioner "shell" {
-      inline = [
-        "echo 'Installing dependencies: git and pip...'",
-        "sudo apt-get update",
-        "sudo apt-get install -y ansible git",
-
-        "echo 'Cloning Ansible repository...'",
-        "git clone https://github.com/romanpeters/server.git",
-        "cd server/ansible",
-
-        "echo 'Creating Ansible inventory...'",
-        "printf 'ubuntu:\n  hosts:\n    localhost:\n      ansible_connection: local\n' > inventory/packer_inventory.yml",
-
-        "echo 'Running the base Ansible playbook...'",
-        "ansible-playbook playbooks/packer_build.yml -i inventory/packer_inventory.yml -e 'username=${var.username} email=${var.email}'"
-      ]
-    }
-
-    provisioner "shell" {
-      inline = [
         "echo 'Cleaning up...'",
         "sudo rm /etc/ssh/ssh_host_*",
         "sudo truncate -s 0 /etc/machine-id",

@@ -22,10 +22,6 @@ variable "username" {
   type    = string
 }
 
-variable "email" {
-  type    = string
-}
-
 variable "ssh_password_hashed" {
   # env PKR_VAR_ssh_password_hashed
   type    = string
