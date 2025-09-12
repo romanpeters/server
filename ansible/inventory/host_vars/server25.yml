@@ -3,5 +3,4 @@
 configure:
   - base
   - topgrade
-  - base
   - docker
