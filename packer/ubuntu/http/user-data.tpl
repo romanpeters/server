@@ -7,10 +7,9 @@ autoinstall:
   network:
     version: 2
     ethernets:
-      id0:
-        match:
-          name: "en*"
+      ens18:
         dhcp4: true
+        dhcp-identifier: mac
   ssh:
     install-server: true
     allow-pw: false

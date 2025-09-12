@@ -37,6 +37,11 @@ resource "proxmox_virtual_environment_vm" "server25" {
         var.ssh_key,
       ]
     }
+    ip_config {
+      ipv4 {
+        address = "dhcp"
+      }
+    }
   }
 
   memory {

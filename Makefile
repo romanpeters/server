@@ -15,8 +15,22 @@ LIMIT_FOR_ROLE = $(if $(HOST_LIST),--limit $(HOST_LIST),)
 LIMIT ?=
 LIMIT_CMD = $(if $(LIMIT),--limit $(LIMIT),$(LIMIT_FOR_ROLE))
 
+REMAKE ?=
+REMAKE_CMD = $(if $(REMAKE),-replace="$(REMAKE)",)
+
+# Timer definitions
+define TSTART
+	@START_TIME=$$(date +%s); \
+	trap 'END_TIME=$$(date +%s); echo "Target $@ finished in $$((END_TIME - START_TIME)) seconds.";' EXIT;
+endef
+
+define TSTART_CLEAN
+	@START_TIME=$$(date +%s); \
+	trap 'END_TIME=$$(date +%s); echo "Target $@ finished in $$((END_TIME - START_TIME)) seconds."; $(MAKE) clean-dotenvs' EXIT;
+endef
+
 # Phony targets
-.PHONY: help all lint vars clean-dotenvs terraform ansible webserver nixos packer status check docker \
+.PHONY: help all lint vars clean-dotenvs terraform ansible webserver nixos packer status check docker server25 \
 	check/ansible check/terraform status/dns status/http status/hosts inventory
 
 help:
@@ -31,6 +45,7 @@ help:
 	@echo "  webserver        Run the webserver playbook"
 	@echo "  nixos            Run the nixos_deploy playbook"
 	@echo "  packer           Build packer templates"
+	@echo "  server25         Deploy server25"
 	@echo "  check            Run all tests"
 	@echo "  status           Check the status of the project"
 	@echo "  inventory        Show the ansible inventory"
@@ -40,6 +55,7 @@ all: packer terraform ## Run packer and terraform
 
 
 pre-commit: vars ## Lint the project
+	$(TSTART)
 	@echo "Linting the project..."
 	# Run pre-commit twice to format and then lint
 	@pre-commit run --all-files || pre-commit run --all-files
@@ -73,9 +89,11 @@ clean-dotenvs: ## Remove generated .env files
 
 
 
+
 terraform: terraform/apply ## Apply Terraform changes
 
 terraform/plan: vars-terraform ## Plan Terraform changes
+	$(TSTART)
 	@echo "Planning Terraform changes..."
 	@. .envrc && \
 	 cd terraform && \
@@ -83,49 +101,53 @@ terraform/plan: vars-terraform ## Plan Terraform changes
 	 terraform plan -var-file=vars.tfvars
 
 terraform/apply: vars-terraform ## Apply Terraform changes
+	$(TSTART)
 	@echo "Applying Terraform changes..."
 	@. .envrc && \
 	 cd terraform && \
 	 terraform init && \
-	 terraform apply -var-file=vars.tfvars
+	 terraform apply -var-file=vars.tfvars $(REMAKE_CMD)
 	@make status/dns
 	@make status/hosts
 
 
 ansible: vars-ansible vars-dotenvs ## Run Ansible playbooks
+	$(TSTART_CLEAN)
 	@echo "Running Ansible playbooks..."; \
-	trap '$(MAKE) clean-dotenvs' EXIT; \
 	. .envrc && \
 	(cd ansible && ansible-playbook playbooks/configure_hosts.yml -e @vars/main.yml $(LIMIT_CMD) $(ROLE_CMD)) \
 	&& $(MAKE) status/http && $(MAKE) status/hosts
 
 webserver: vars-ansible ## Run the webserver playbook
+	$(TSTART_CLEAN)
 	@echo "Running the webserver playbook..."; \
-	trap '$(MAKE) clean-dotenvs' EXIT; \
 	. .envrc && \
 	(cd ansible && ansible-playbook playbooks/configure_webserver.yml -e @vars/main.yml $(LIMIT_CMD)); \
 	$(MAKE) status/http
 
 nixos: vars-nixos ## Run the nixos_deploy playbook
+	$(TSTART_CLEAN)
 	@echo "Running the nixos_playbook..."; \
-	trap '$(MAKE) clean-dotenvs' EXIT; \
 	. .envrc && \
 	(cd ansible && ansible-playbook playbooks/deploy_nixos.yml -e @vars/main.yml $(LIMIT_CMD))
 
 packer: vars-packer ## Build packer templates
+	$(TSTART)
 	@echo "Building packer VM template..."; \
 	. .envrc && \
 	./scripts/delete_packer_vm.py && \
 	(cd packer/ubuntu && packer init . && packer build -var-file=../vars.pkrvars.hcl .)
 
+server25: packer ## Deploy server25
+	@echo "Deploying server25..."
+	@$(MAKE) terraform REMAKE="proxmox_virtual_environment_vm.server25"
+	@$(MAKE) ansible LIMIT=server25
 
 
 
 docker: vars-ansible vars-dotenvs ## Run the docker playbook
-
-
+	$(TSTART_CLEAN)
 	@echo "Running the docker playbook..."; \
-	trap '$(MAKE) clean-dotenvs' EXIT; \
 	. .envrc && \
 	(cd ansible && ansible-playbook playbooks/configure_docker.yml -e @vars/main.yml $(LIMIT_CMD))
 
@@ -150,11 +172,13 @@ status/hosts: ## Check the status of the hosts
 status: status/dns status/http status/hosts ## Check the status of the project
 
 check/ansible: ## Run ansible tests
+	$(TSTART)
 	@echo "Running ansible tests..."
 	@cd ansible && \
 	 ansible-playbook playbooks/*.yml --syntax-check $(LIMIT_CMD)
 
 check/terraform: ## Run terraform tests
+	$(TSTART)
 	@echo "Running terraform tests..."
 	@cd terraform && \
 	 terraform fmt --recursive
