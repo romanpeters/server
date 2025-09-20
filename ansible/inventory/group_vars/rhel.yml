@@ -1,4 +1,4 @@
 ---
-rhel_packages:
+extra_packages:
   - glibc-common
   - fastfetch
