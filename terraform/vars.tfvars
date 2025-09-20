@@ -1,6 +1,6 @@
 ### This file is generated from vars.ini
 ssh_key            = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAvUHmajV0+ZqEzAs5nl7vCw+9DmK6LM29zokZFMECuH romanpeters@masterkey"
-name               = "Roman Peters"
+full_name          = "Roman Peters"
 username           = "romanpeters"
 email              = "mail@romanpeters.nl"
 domain_name        = "romanpeters.nl"

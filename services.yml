@@ -2,6 +2,19 @@ api-printer:
   docker: false
   host: mac-mini
   port: 8000
+  public: false
+  ssl: false
+s3:
+  docker: minio
+  host: s3
+  port: 9000
+  public: false
+  ssl: false
+minio:
+  docker: minio
+  host: s3
+  port: 9001
+  public: false
   ssl: false
 automation:
   # server
