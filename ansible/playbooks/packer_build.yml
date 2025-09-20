@@ -1,7 +1,0 @@
----
-- name: Playbook ran by packer in new template
-  hosts: localhost
-  gather_facts: true
-  become: true
-  roles:
-    - base

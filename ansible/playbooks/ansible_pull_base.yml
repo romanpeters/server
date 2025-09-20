@@ -1,0 +1,18 @@
+---
+- name: Pull Ansible Base
+  hosts: localhost
+  gather_facts: true
+  become: true
+
+  vars:
+    fullname: "{{ lookup('pipe', 'getent passwd ' + username + ' | cut -d: -f5 | cut -d, -f1') }}"
+    username: "{{ lookup('env', 'USER') }}"
+
+  pre_tasks:
+    - name: Set inventory group based on OS family
+      add_host:
+        name: localhost
+        groups: "{{ ansible_facts['os_family'] | lower }}"
+
+  roles:
+    - base

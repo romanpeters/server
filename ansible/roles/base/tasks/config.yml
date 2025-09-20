@@ -10,4 +10,5 @@
 - name: Copy Git configuration
   ansible.builtin.template:
     src: gitconfig.j2
-    dest: "{{ ansible_env.HOME }}/.gitconfig"
+    dest: "/home/{{ username }}/.gitconfig"
+  when: full_name is defined and full_name != ""
