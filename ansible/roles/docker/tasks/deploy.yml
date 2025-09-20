@@ -40,6 +40,7 @@
     group: docker
     mode: "0660"
     directory_mode: "0775"
+    backup: true
   loop: "{{ docker_services | unique }}"
   loop_control:
     loop_var: service

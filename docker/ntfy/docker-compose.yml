@@ -1,0 +1,15 @@
+services:
+  ntfy:
+    image: binwiederhier/ntfy
+    container_name: ntfy
+    command:
+      - serve
+    environment:
+      - TZ=Europe/Asmterdam
+    #user: UID:GID # optional: replace with your own user/group or uid/gid
+    volumes:
+      - ./cache:/var/cache/ntfy
+      - ./config:/etc/ntfy
+    ports:
+      - ${NTFY_PORT}:80
+    restart: unless-stopped
