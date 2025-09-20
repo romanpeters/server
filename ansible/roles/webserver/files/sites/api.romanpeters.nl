@@ -21,7 +21,7 @@ server {
 
     location = /daily/today {
         default_type text/plain;
-        alias /var/www/html/api.romanpeters.nl/daily/$today.txt;
+        try_files /daily/$today.txt =404;
     }
     location /daily/ {
         default_type text/plain;
