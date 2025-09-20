@@ -5,7 +5,7 @@ services:
     command:
       - serve
     environment:
-      - TZ=Amsterdam/Europe
+      - TZ=Europe/Asmterdam
     #user: UID:GID # optional: replace with your own user/group or uid/gid
     volumes:
       - ./cache:/var/cache/ntfy
