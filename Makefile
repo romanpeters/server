@@ -15,7 +15,8 @@ TARGET_CMD = $(if $(MODULE),-target=module.$(MODULE),)
 REMAKE ?=
 REMAKE_CMD = $(if $(REMAKE),-replace="$(REMAKE)",)
 # Phony targets
-.PHONY: help all lint vars clean-dotenvs terraform ansible webserver nixos packer status check docker server25 \
+.PHONY: help all lint vars clean-dotenvs terraform terraform/init terraform/plan terraform/apply \
+	ansible webserver nixos packer status check docker server25 \
 	check/ansible check/terraform status/dns status/http status/hosts inventory lxc-template-ubuntu
 help:
 	@echo "Usage: make [target] [LIMIT=host] [ROLE=role] [MODULE=module]"

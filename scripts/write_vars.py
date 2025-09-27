@@ -111,9 +111,7 @@ def main() -> None:
 
     if not args.format or args.format == "ansible":
         ansible_vars = merge_sections(default_section, sections.get("ansible", {}))
-        tailscale_authkey = get_terraform_output("tailscale_authkey")
-        if tailscale_authkey:
-            ansible_vars["tailscale_authkey"] = tailscale_authkey
+
         write_vars(ansible_vars, "ansible/vars/main.yml", "ansible")
 
     if not args.format or args.format == "nixos":
