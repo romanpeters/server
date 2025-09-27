@@ -10,13 +10,15 @@ HOST_LIST := $(if $(ROLE),$(shell grep -l "  - $(ROLE)" ansible/inventory/host_v
 LIMIT_FOR_ROLE = $(if $(HOST_LIST),--limit $(HOST_LIST),)
 LIMIT ?=
 LIMIT_CMD = $(if $(LIMIT),--limit $(LIMIT),$(LIMIT_FOR_ROLE))
+MODULE ?=
+TARGET_CMD = $(if $(MODULE),-target=module.$(MODULE),)
 REMAKE ?=
 REMAKE_CMD = $(if $(REMAKE),-replace="$(REMAKE)",)
 # Phony targets
 .PHONY: help all lint vars clean-dotenvs terraform ansible webserver nixos packer status check docker server25 \
-	check/ansible check/terraform status/dns status/http status/hosts inventory
+	check/ansible check/terraform status/dns status/http status/hosts inventory lxc-template-ubuntu
 help:
-	@echo "Usage: make [target] [LIMIT=host] [ROLE=role]"
+	@echo "Usage: make [target] [LIMIT=host] [ROLE=role] [MODULE=module]"
 	@echo ""
 	@echo "Targets:"
 	@echo "  all              Run packer and terraform"
@@ -31,6 +33,7 @@ help:
 	@echo "  check            Run all tests"
 	@echo "  status           Check the status of the project"
 	@echo "  inventory        Show the ansible inventory"
+	@echo "  lxc-template-ubuntu Create an LXC Ubuntu template"
 all: packer terraform ## Run packer and terraform
 pre-commit: vars ## Lint the project
 	@echo "Linting the project..."
@@ -57,18 +60,22 @@ clean-dotenvs: ## Remove generated .env files
 	@find docker -name ".env" -type f -delete
 
 terraform: terraform/apply ## Apply Terraform changes
-terraform/plan: vars-terraform ## Plan Terraform changes
+terraform/init: ## Initialize Terraform
+	@echo "Initializing Terraform..."
+	@. .envrc && \
+	 cd terraform && \
+	 terraform init
+
+terraform/plan: terraform/init vars-terraform ## Plan Terraform changes
 	@echo "Planning Terraform changes..."
 	@. .envrc && \
 	 cd terraform && \
-	 terraform init && \
-	 terraform plan -var-file=vars.tfvars
-terraform/apply: vars-terraform ## Apply Terraform changes
+	 terraform plan -var-file=vars.tfvars $(TARGET_CMD)
+terraform/apply: terraform/init vars-terraform ## Apply Terraform changes
 	@echo "Applying Terraform changes..."
 	@. .envrc && \
 	 cd terraform && \
-	 terraform init && \
-	 terraform apply -var-file=vars.tfvars $(REMAKE_CMD)
+	 terraform apply -var-file=vars.tfvars $(REMAKE_CMD) $(TARGET_CMD)
 	@make status/dns
 	@make status/hosts
 
@@ -86,6 +93,10 @@ nixos: vars-nixos ## Run the nixos_deploy playbook
 	@echo "Running the nixos_playbook..."; \
 	. .envrc && \
 	(cd ansible && ansible-playbook playbooks/deploy_nixos.yml -e @vars/main.yml $(LIMIT_CMD))
+lxc-template-ubuntu: vars-ansible ## Create an LXC Ubuntu template
+	@echo "Creating an LXC Ubuntu template..."; \
+	. .envrc && \
+	(cd ansible && ansible-playbook playbooks/create_lxc_template_ubuntu.yml -e @vars/main.yml $(LIMIT_CMD))
 packer: vars-packer ## Build packer templates
 	@echo "Building packer VM template..."; \
 	. .envrc && \
@@ -119,8 +130,9 @@ check/ansible: ## Run ansible tests
 	@echo "Running ansible tests..."
 	@cd ansible && \
 	 ansible-playbook playbooks/*.yml --syntax-check $(LIMIT_CMD)
-check/terraform: ## Run terraform tests
+check/terraform: terraform/init ## Run terraform tests
 	@echo "Running terraform tests..."
 	@cd terraform && \
-	 terraform fmt --recursive
+	 terraform fmt --recursive && \
+	 terraform validate
 check:   check/ansible check/terraform ## Run all tests

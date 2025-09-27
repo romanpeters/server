@@ -1,4 +1,10 @@
 ---
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    allow_unauthenticated: true
+  when: ansible_os_family == 'Debian'
+
 - name: Install packages
   ansible.builtin.package:
     name: "{{ packages }}"

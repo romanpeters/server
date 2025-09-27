@@ -3,7 +3,7 @@ terraform {
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
-      version = "0.83.1"
+      version = "0.84.0"
     }
     unifi = {
       source  = "filipowm/unifi"
@@ -17,17 +17,12 @@ terraform {
       source  = "hashicorp/http"
       version = "~> 3.0"
     }
-    tailscale = {
-      source  = "tailscale/tailscale"
-      version = "~> 0"
-    }
   }
 }
 
 provider "proxmox" {
-  endpoint  = var.proxmox_url
-  api_token = var.proxmox_api_key
-  insecure  = true
+  endpoint = var.proxmox_url
+  insecure = true
 }
 
 provider "unifi" {
@@ -38,9 +33,4 @@ provider "unifi" {
 
 provider "cloudflare" {
   api_token = var.cloudflare_api_key
-}
-
-provider "tailscale" {
-  oauth_client_id     = var.tailscale_oauth_client_id
-  oauth_client_secret = var.tailscale_oauth_client_secret
 }

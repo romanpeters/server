@@ -6,6 +6,8 @@
   tasks:
     - name: Apply roles defined for this host
       ansible.builtin.include_role:
-        name: "{{ item }}"
+        name: "{{ role_name }}"
       loop: "{{ configure | default([]) }}"
-      when: role_to_run is not defined or item == role_to_run
+      loop_control:
+        loop_var: role_name
+      when: role_to_run is not defined or role_name == role_to_run

@@ -1,3 +1,4 @@
+
 data "http" "public_ip" {
   url = "https://api.ipify.org"
 }
@@ -5,11 +6,11 @@ data "http" "public_ip" {
 resource "unifi_dns_record" "dns_wildcard" {
   name   = "*.${var.domain_name}"
   type   = "A"
-  record = local.hosts["webserver"].ip
+  record = var.hosts["webserver"].ip
 }
 
 resource "unifi_dns_record" "devices" {
-  for_each = { for k, v in local.hosts : k => v }
+  for_each = { for k, v in var.hosts : k => v }
 
   name   = each.key
   type   = "A"
@@ -18,7 +19,7 @@ resource "unifi_dns_record" "devices" {
 
 resource "unifi_user" "devices" {
   # Exclude the controller itself (unifi) from DNS settings
-  for_each = { for k, v in local.hosts : k => v if k != "unifi" }
+  for_each = { for k, v in var.hosts : k => v if k != "unifi" }
 
   mac            = each.value.mac
   name           = each.value.friendly_name
@@ -49,7 +50,7 @@ resource "cloudflare_dns_record" "www" {
 }
 
 resource "cloudflare_dns_record" "dns_record" {
-  for_each = { for k, v in local.services : k => v if lookup(v, "public", false) == true }
+  for_each = { for k, v in var.services : k => v if lookup(v, "public", false) == true }
 
   zone_id = var.cloudflare_zone_id
   comment = "Managed by Terraform"

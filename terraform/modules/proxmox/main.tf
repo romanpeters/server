@@ -1,3 +1,148 @@
+
+resource "proxmox_virtual_environment_container" "production" {
+  vm_id      = "100"
+  node_name  = "proxmox"
+  protection = false
+  started    = true
+  tags = [
+    "terraform",
+  ]
+  template     = false
+  unprivileged = true
+
+  cpu {
+    architecture = "amd64"
+    cores        = 2
+    units        = 1024
+  }
+
+  disk {
+    datastore_id = "local-zfs"
+    size         = 16
+  }
+
+  initialization {
+    hostname = "production"
+
+    user_account {
+      password = var.root_password
+      keys     = [var.ssh_key]
+    }
+
+    dns {
+      servers = [
+        "10.10.20.1",
+      ]
+    }
+
+    ip_config {
+      ipv4 {
+        address = "dhcp"
+      }
+    }
+  }
+
+  memory {
+    dedicated = 4096
+    swap      = 512
+  }
+
+  network_interface {
+    bridge      = "vmbr0"
+    enabled     = true
+    firewall    = false
+    mac_address = var.hosts["production"].mac
+    mtu         = 0
+    name        = "eth0"
+    rate_limit  = 0
+    vlan_id     = var.hosts["production"].vlan
+  }
+
+  operating_system {
+    type             = "ubuntu"
+    template_file_id = var.ubuntu_lxc_template
+  }
+
+  features {
+    nesting = true
+  }
+}
+
+
+resource "proxmox_virtual_environment_container" "s3" {
+  vm_id      = "107"
+  node_name  = "proxmox"
+  protection = true
+  started    = true
+  tags = [
+    "terraform",
+  ]
+  template     = false
+  unprivileged = false
+
+  cpu {
+    architecture = "amd64"
+    cores        = 2
+    units        = 1024
+  }
+
+  disk {
+    datastore_id = "local-zfs"
+    size         = 64
+  }
+
+  initialization {
+    hostname = "s3"
+
+    user_account {
+      password = var.root_password
+      keys     = [var.ssh_key]
+    }
+
+    dns {
+      servers = [
+        "10.10.20.1",
+      ]
+    }
+
+    ip_config {
+      ipv4 {
+        address = "dhcp"
+      }
+    }
+  }
+
+  memory {
+    dedicated = 4096
+    swap      = 512
+  }
+
+  network_interface {
+    bridge      = "vmbr0"
+    enabled     = true
+    firewall    = false
+    mac_address = var.hosts["s3"].mac
+    mtu         = 0
+    name        = "eth0"
+    rate_limit  = 0
+    vlan_id     = var.hosts["s3"].vlan
+  }
+
+  operating_system {
+    type             = "ubuntu"
+    template_file_id = var.ubuntu_lxc_template
+  }
+
+  features {
+    nesting = true
+  }
+
+  mount_point {
+    volume = "/mnt/pve/containers"
+    path   = "/mnt/containers"
+  }
+}
+
 resource "proxmox_virtual_environment_vm" "server25" {
   acpi          = true
   description   = "Managed by Terraform."
@@ -50,9 +195,9 @@ resource "proxmox_virtual_environment_vm" "server25" {
 
   network_device {
     bridge      = "vmbr0"
-    mac_address = local.hosts["server25"].mac
+    mac_address = var.hosts["server25"].mac
     model       = "virtio"
-    vlan_id     = local.hosts["server25"].vlan
+    vlan_id     = var.hosts["server25"].vlan
   }
 
   lifecycle {
@@ -131,12 +276,12 @@ resource "proxmox_virtual_environment_vm" "server" {
     disconnected = false
     enabled      = true
     firewall     = false
-    mac_address  = local.hosts["server"].mac
+    mac_address  = var.hosts["server"].mac
     model        = "virtio"
     mtu          = 0
     queues       = 0
     rate_limit   = 0
-    vlan_id      = local.hosts["server"].vlan
+    vlan_id      = var.hosts["server"].vlan
   }
 
   vga {
@@ -213,12 +358,12 @@ resource "proxmox_virtual_environment_vm" "homeassistant" {
     disconnected = false
     enabled      = true
     firewall     = false
-    mac_address  = local.hosts["home-assistant"].mac
+    mac_address  = var.hosts["home-assistant"].mac
     model        = "virtio"
     mtu          = 0
     queues       = 0
     rate_limit   = 0
-    vlan_id      = local.hosts["home-assistant"].vlan
+    vlan_id      = var.hosts["home-assistant"].vlan
   }
 
   lifecycle {
@@ -290,12 +435,12 @@ resource "proxmox_virtual_environment_vm" "ansible" {
     disconnected = false
     enabled      = true
     firewall     = false
-    mac_address  = local.hosts["ansible"].mac
+    mac_address  = var.hosts["ansible"].mac
     model        = "virtio"
     mtu          = 0
     queues       = 0
     rate_limit   = 0
-    vlan_id      = local.hosts["ansible"].vlan
+    vlan_id      = var.hosts["ansible"].vlan
   }
 
   lifecycle {

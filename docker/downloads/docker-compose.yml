@@ -1,6 +1,6 @@
 services:
   gluetun:
-    image: qmcgaw/gluetun
+    image: qmcgaw/gluetun:v3.40.0
     container_name: gluetun
     cap_add:
       - NET_ADMIN
@@ -17,11 +17,10 @@ services:
       - SERVER_COUNTRIES=Romania
     ports:
       - ${TRANSMISSION_PORT}:9091
-      - ${PROWLARR_PORT}:9696
     restart: always
 
   transmission:
-    image: lscr.io/linuxserver/transmission
+    image: lscr.io/linuxserver/transmission:4.0.6-r4-ls311
     container_name: transmission
     network_mode: service:gluetun
     environment:
@@ -32,16 +31,4 @@ services:
       - ./transmission:/config
       - /mnt/media/downloads:/downloads
       - /mnt/media/downloads/watch:/watch
-    restart: always
-
-  prowlarr:
-    image: lscr.io/linuxserver/prowlarr
-    container_name: prowlarr
-    network_mode: service:gluetun
-    volumes:
-      - ./prowlarr:/config
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Amsterdam
     restart: always
