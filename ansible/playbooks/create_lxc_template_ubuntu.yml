@@ -1,0 +1,113 @@
+- hosts: localhost
+  gather_facts: false
+  vars:
+    proxmox_node: "proxmox"
+    lxc_id: 190
+    lxc_hostname: "ubuntu-lxc"
+    lxc_storage: "local-zfs"
+    lxc_memory: 2048
+    lxc_cores: 2
+    lxc_net:
+      net0: "name=eth0,bridge=vmbr0,ip=dhcp"
+  tasks:
+    - name: Delete existing LXC container
+      community.proxmox.proxmox:
+        vmid: "{{ lxc_id }}"
+        state: absent
+
+    - name: Create LXC container
+      community.proxmox.proxmox:
+        node: "{{ proxmox_node }}"
+        vmid: "{{ lxc_id }}"
+        hostname: "{{ lxc_hostname }}"
+        ostemplate: "{{ ubuntu_lxc_base_template }}"
+        storage: "{{ lxc_storage }}"
+        cores: "{{ lxc_cores }}"
+        memory: "{{ lxc_memory }}"
+        netif: "{{ lxc_net }}"
+        state: present
+
+    - name: Start LXC container
+      community.proxmox.proxmox:
+        node: "{{ proxmox_node }}"
+        vmid: "{{ lxc_id }}"
+        state: started
+
+    - name: Update apt cache
+      ansible.builtin.command:
+        cmd: "pct exec {{ lxc_id }} -- apt update"
+      delegate_to: "{{ proxmox_node }}"
+      become: true
+
+    - name: Install SSH inside container
+      ansible.builtin.command:
+        cmd: "pct exec {{ lxc_id }} -- env DEBIAN_FRONTEND=noninteractive apt install -y openssh-server"
+      delegate_to: "{{ proxmox_node }}"
+      become: true
+
+    - name: Enable SSH service
+      ansible.builtin.command:
+        cmd: "pct exec {{ lxc_id }} -- systemctl enable ssh"
+      delegate_to: "{{ proxmox_node }}"
+      become: true
+
+    - name: Start SSH service
+      ansible.builtin.command:
+        cmd: "pct exec {{ lxc_id }} -- systemctl start ssh"
+      delegate_to: "{{ proxmox_node }}"
+      become: true
+
+    - name: Add user and SSH key
+      ansible.builtin.command:
+        cmd: >
+          pct exec {{ lxc_id }} -- bash -c
+          "useradd -m -s /bin/bash {{ username }} || true &&
+          echo \"{{ username }}:{{ lookup('env', 'ROOT_PASSWORD') }}\" | chpasswd &&
+          mkdir -p /home/{{ username }}/.ssh &&
+          echo \"{{ ssh_key }}\" > /home/{{ username }}/.ssh/authorized_keys &&
+          chown -R {{ username }}:{{ username }} /home/{{ username }}/.ssh &&
+          chmod 700 /home/{{ username }}/.ssh &&
+          chmod 600 /home/{{ username }}/.ssh/authorized_keys"
+      delegate_to: "{{ proxmox_node }}"
+      become: true
+
+    - name: Grant passwordless sudo to user
+      ansible.builtin.command:
+        cmd: >
+          pct exec {{ lxc_id }} -- bash -c
+          "echo '{{ username }} ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/{{ username }} &&
+           chmod 0440 /etc/sudoers.d/{{ username }}"
+      delegate_to: "{{ proxmox_node }}"
+      become: true
+
+    - name: Stop LXC container
+      community.proxmox.proxmox:
+        node: "{{ proxmox_node }}"
+        vmid: "{{ lxc_id }}"
+        state: stopped
+
+    - name: Backup LXC to nas storage as template
+      ansible.builtin.command:
+        cmd: "vzdump {{ lxc_id }} --mode stop --compress gzip --dumpdir /mnt/pve/nas/template/cache"
+      delegate_to: "{{ proxmox_node }}"
+      become: true
+      register: vzdump_output
+      changed_when: true
+
+    - name: Extract backup file path from vzdump output
+      set_fact:
+        backup_path: "{{ (vzdump_output.stdout | regex_search(\"INFO: creating vzdump archive '([^']*)'\", '\\1'))[0] }}"
+      when: vzdump_output.stdout is defined
+
+    - name: Rename backup to template name
+      ansible.builtin.command:
+        cmd: "mv {{ backup_path }} /mnt/pve/nas/template/cache/{{ ubuntu_lxc_template_name }}.tar.gz"
+      delegate_to: "{{ proxmox_node }}"
+      become: true
+      when: backup_path is defined
+
+    - name: Delete original LXC container
+      community.proxmox.proxmox:
+        node: "{{ proxmox_node }}"
+        vmid: "{{ lxc_id }}"
+        state: absent

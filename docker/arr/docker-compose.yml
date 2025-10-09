@@ -1,7 +1,7 @@
 ---
 services:
   sonarr:
-    image: linuxserver/sonarr:latest
+    image: linuxserver/sonarr:4.0.15.2941-ls292
     container_name: sonarr
     volumes:
       - ./sonarr:/config
@@ -16,7 +16,7 @@ services:
     restart: always
 
   radarr:
-    image: linuxserver/radarr:latest
+    image: linuxserver/radarr:5.27.5.10198-ls283
     container_name: radarr
     volumes:
       - ./radarr:/config
@@ -31,7 +31,7 @@ services:
     restart: always
 
   bazarr:
-    image: linuxserver/bazarr:latest
+    image: linuxserver/bazarr:v1.5.3-ls319
     container_name: bazarr
     volumes:
       - ./bazarr:/config
@@ -45,7 +45,7 @@ services:
     restart: always
 
   readarr:
-    image: lscr.io/linuxserver/readarr:develop
+    image: lscr.io/linuxserver/readarr:develop-0.4.13.2760-ls149
     container_name: readarr
     volumes:
       - ./readarr:/config
@@ -60,7 +60,7 @@ services:
     restart: always
 
   readarr-audio:
-    image: lscr.io/linuxserver/readarr:develop
+    image: lscr.io/linuxserver/readarr:develop-0.4.13.2760-ls149
     container_name: readarr-audio
     volumes:
       - ./readarr-audio:/config
@@ -72,4 +72,17 @@ services:
       - TZ=Europe/Amsterdam
     ports:
       - ${READARR_AUDIO_PORT}:8787
+    restart: always
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:2.0.5.5160-ls126
+    container_name: prowlarr
+    volumes:
+      - ./prowlarr:/config
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Amsterdam
+    ports:
+      - ${PROWLARR_PORT}:9696
     restart: always

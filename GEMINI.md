@@ -48,6 +48,10 @@ and it will automatically install the dependencies listed in the `dependencies` 
 ## Ansible
 Use Fully Qualified Module Names (FQMN) for Ansible tasks.
 
+## Storage
+You can access S3-like storage using the `mc` command (MinIO Client) with the alias 'minio':
+`mc ls minio`
+
 ## Restrictions
 You are not allowed to edit or remove these files:
 - hosts.yml

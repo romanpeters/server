@@ -1,0 +1,41 @@
+---
+- name: Build, Provision and Configure
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Generate variable files
+      ansible.builtin.shell:
+        cmd: make vars
+        chdir: "{{ playbook_dir }}/../../"
+      tags:
+        - vars
+
+    - name: Build packer VM template
+      ansible.builtin.shell:
+        cmd: make packer
+        chdir: "{{ playbook_dir }}/../../"
+      tags:
+        - packer
+
+    - name: Create LXC Ubuntu template
+      ansible.builtin.shell:
+        cmd: make lxc-template-ubuntu
+        chdir: "{{ playbook_dir }}/../../"
+      tags:
+        - lxc
+
+    - name: Apply Terraform changes
+      ansible.builtin.shell:
+        cmd: make terraform
+        chdir: "{{ playbook_dir }}/../../"
+      tags:
+        - terraform
+
+    - name: Configure all hosts
+      ansible.builtin.shell:
+        cmd: make ansible
+        chdir: "{{ playbook_dir }}/../../"
+      tags:
+        - ansible

@@ -1,0 +1,4 @@
+---
+configure:
+  - base
+  - docker

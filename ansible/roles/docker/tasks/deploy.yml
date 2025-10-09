@@ -13,15 +13,15 @@
 
 - name: Get unique docker services for this host
   ansible.builtin.set_fact:
-    docker_services: "{{ docker_services | default([]) + [service.value.docker] }}"
+    docker_services: "{{ docker_services | default([]) + [service_item.value.docker] }}"
   with_dict: "{{ services_data }}"
   loop_control:
-    loop_var: service
+    loop_var: service_item
   when:
-    - inventory_hostname == service.value.host
-    - service.value.docker is defined
-    - service.value.docker != ''
-    - service.value.docker != false
+    - inventory_hostname == service_item.value.host
+    - service_item.value.docker is defined
+    - service_item.value.docker != ''
+    - service_item.value.docker != false
 
 - name: Create /srv/docker directory
   become: true
@@ -34,8 +34,8 @@
 
 - name: Place Docker Compose files
   ansible.builtin.copy:
-    src: "{{ playbook_dir }}/../../docker/{{ service }}/"
-    dest: "/srv/docker/{{ service }}"
+    src: "{{ playbook_dir }}/../../docker/{{ service_name }}/"
+    dest: "/srv/docker/{{ service_name }}"
     owner: root
     group: docker
     mode: "0660"
@@ -43,7 +43,7 @@
     backup: true
   loop: "{{ docker_services | unique }}"
   loop_control:
-    loop_var: service
+    loop_var: service_name
 
 - name: Get docker-compose bind mount directories
   script:
@@ -58,19 +58,21 @@
 - name: Ensure directories for docker-compose bind mounts exist
   become: true
   ansible.builtin.file:
-    path: "/srv/{{ item }}"
+    path: "/srv/{{ mount_dir }}"
     state: directory
     owner: root
     group: docker
     mode: "0775"
   loop: "{{ bind_mount_dirs.stdout_lines }}"
-  when: "item.split('/')[1] in (docker_services | unique)"
+  loop_control:
+    loop_var: mount_dir
+  when: "mount_dir.split('/')[1] in (docker_services | unique)"
 
 - name: Run Docker Compose
   community.docker.docker_compose_v2:
-    project_src: "/srv/docker/{{ service }}"
+    project_src: "/srv/docker/{{ service_name }}"
     state: present
   #    recreate: always
   loop: "{{ docker_services | unique }}"
   loop_control:
-    loop_var: service
+    loop_var: service_name
