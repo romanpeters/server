@@ -85,7 +85,7 @@ n8n:
   docker: n8n
   host: server
   port: 8011
-  public: false
+  public: true
   ssl: false
 prowlarr:
   # local data

@@ -1,6 +1,0 @@
----
-- name: Deploy Docker services
-  hosts: all
-  become: true
-  roles:
-    - docker

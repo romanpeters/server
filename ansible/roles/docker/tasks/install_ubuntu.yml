@@ -31,7 +31,6 @@
     name:
       - ca-certificates
       - curl
-      - cifs-utils
     state: present
     update_cache: true
 

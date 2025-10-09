@@ -66,6 +66,11 @@ resource "proxmox_virtual_environment_container" "production" {
   features {
     nesting = true
   }
+
+  mount_point {
+    volume = "/mnt/pve/containers"
+    path   = "/mnt/containers"
+  }
 }
 
 

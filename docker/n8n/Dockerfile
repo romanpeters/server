@@ -1,4 +1,4 @@
-FROM n8nio/n8n:1.110.0
+FROM n8nio/n8n:1.114.2
 
 ARG TYPST_VERSION=0.13.1
 

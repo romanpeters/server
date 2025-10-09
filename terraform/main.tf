@@ -1,3 +1,14 @@
+terraform {
+  backend "s3" {
+    bucket                      = "terraform"
+    key                         = "terraform.tfstate"
+    endpoint                    = "s3.romanpeters.nl"
+    region                      = "us-east-1"
+    skip_region_validation      = true
+    skip_credentials_validation = true
+    force_path_style            = true
+  }
+}
 
 module "proxmox" {
   source = "./modules/proxmox"
